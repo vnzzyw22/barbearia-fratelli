@@ -1,0 +1,31 @@
+// node scripts/qa-mobile-states.mjs <baseUrl> <outDir> — menu aberto + barra fixa + hero desktop
+import { chromium } from "playwright-core";
+import fs from "node:fs";
+const [base, out] = process.argv.slice(2);
+fs.mkdirSync(out, { recursive: true });
+const browser = await chromium.launch({ channel: "chrome", headless: true });
+const errors = [];
+const mk = async (vp) => {
+  const ctx = await browser.newContext({ viewport: vp });
+  const p = await ctx.newPage();
+  p.on("console", (m) => ["error", "warning"].includes(m.type()) && errors.push(m.text()));
+  p.on("pageerror", (e) => errors.push("pageerror " + e.message));
+  await p.goto(base, { waitUntil: "load", timeout: 120000 });
+  await p.waitForTimeout(1800);
+  return p;
+};
+const d = await mk({ width: 1440, height: 900 });
+await d.screenshot({ path: `${out}/d-hero.png` });
+const m = await mk({ width: 390, height: 844 });
+await m.screenshot({ path: `${out}/m-hero.png` });
+await m.click('button[aria-controls="menu-mobile"]');
+await m.waitForTimeout(900);
+await m.screenshot({ path: `${out}/m-menu.png` });
+await m.keyboard.press("Escape");
+await m.waitForTimeout(700);
+await m.evaluate(() => document.getElementById("servicos").scrollIntoView());
+await m.waitForTimeout(900);
+await m.screenshot({ path: `${out}/m-bar.png` });
+const info = await m.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: innerWidth }));
+console.log(JSON.stringify(info), errors.length ? errors.join("\n") : "sem erros de console");
+await browser.close();
