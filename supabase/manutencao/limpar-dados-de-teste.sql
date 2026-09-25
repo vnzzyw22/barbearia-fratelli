@@ -6,11 +6,18 @@
 --   * caixas que ficarem sem nenhum movimento;
 --   * o rastro na auditoria dessas linhas.
 -- O histórico financeiro é protegido por gatilhos (por design), então este script desliga os
--- gatilhos só nesta sessão (session_replication_role = replica) e apaga na ordem certa das
+-- gatilhos das tabelas envolvidas (e religa no fim, na mesma transação) e apaga na ordem certa das
 -- dependências. Rode UMA vez, no SQL Editor. Tudo roda em UM comando (bloco DO): se algo falhar, nada é apagado.
 do $limpeza$
 begin
-perform set_config('session_replication_role', 'replica', true);
+alter table public.payments disable trigger user;
+alter table public.financial_entries disable trigger user;
+alter table public.cash_movements disable trigger user;
+alter table public.cash_registers disable trigger user;
+alter table public.commissions disable trigger user;
+alter table public.audit_logs disable trigger user;
+alter table public.appointment_items disable trigger user;
+alter table public.appointments disable trigger user;
 
 create temp table t_appts on commit drop as
   select id from public.appointments where notes like 'TESTE AUTOMATICO%'
@@ -62,6 +69,14 @@ delete from public.audit_logs
     or (entity = 'cash_movements'    and entity_id in (select id::text from t_moves))
     or (entity = 'commissions'       and entity_id in (select id::text from t_commissions))
     or (entity = 'cash_registers'    and entity_id not in (select id::text from public.cash_registers));
+alter table public.payments enable trigger user;
+alter table public.financial_entries enable trigger user;
+alter table public.cash_movements enable trigger user;
+alter table public.cash_registers enable trigger user;
+alter table public.commissions enable trigger user;
+alter table public.audit_logs enable trigger user;
+alter table public.appointment_items enable trigger user;
+alter table public.appointments enable trigger user;
 end
 $limpeza$;
 
