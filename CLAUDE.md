@@ -65,7 +65,9 @@ agendamento exigem um Supabase próprio da Fratelli (**ainda não criado**).
   retratos dos barbeiros. A fachada real já está em uso (seção Local).
 - [ ] Copy provisória a aprovar: seção O Clube (`club-section.tsx`), FAQ
   (`faq-accordion.tsx`), headline do Hero. Nada de história/ano inventado.
-- [ ] Projeto Supabase + Vercel + repositório próprios da Fratelli; usuário admin.
+- [x] **Supabase ligado (2026-09-25):** o Fratelli usa o projeto `pgoleccfvulckagvmgbr` (ex-Fialho, negócio encerrado; dados apagados e recarregados com o seed do Fratelli). Variáveis `NEXT_PUBLIC_SUPABASE_URL`/`ANON_KEY` na Vercel (Production/Development) e em `.env.local` (não versionado). Cadastro público de usuários DESLIGADO (as políticas tratam qualquer usuário autenticado como admin — nunca religar). Validado em produção: agendamento ponta a ponta, `EXCLUDE` barra conflito (23P01), RLS barra leitura anônima de clientes/agendamentos e `/admin` redireciona para o login.
+- [ ] **Limpar dados de teste** (se ainda existirem): `delete from public.appointments where notes like 'TESTE AUTOMATICO%'; delete from public.clients where name like 'TESTE AUTOMATICO%';`
+- [ ] Conexão Vercel–GitHub (deploy automático) não configurada; deploy manual com `vercel deploy --prod`.
 - [ ] Tela de Políticas/Termos: texto genérico herdado, revisar.
 
 ## Regras de negócio (herdadas)
