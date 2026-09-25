@@ -103,3 +103,20 @@ sobrescrever arquivos de `public/` (o processo trava o arquivo).
 - Caixa-alta rastreada (`.label`) só em botões/nav; metadado em `.meta`; rótulo de campo `.field-label`.
 - Itálico dourado no título só na seção O Clube. Motion: hero + revelação do Clube; resto estático.
 - Texto pequeno sobre teal usa `gold-soft`; sobre marfim, `gold-deep`/`clay` (AA verificado).
+
+## Sistema financeiro (2026-09-25)
+
+Fluxo: agendamento → atendimento → **Concluir atendimento** (agenda) → pagamento → receita → caixa → relatórios.
+Tudo em **centavos inteiros**; a fonte da verdade é o banco (migrações `20260925120000` fundação, `…130000` cascade dos itens,
+`…140000` correção de acentos). Só o **dono** (`admin_profiles.role='owner'`, função `is_owner()`) acessa; anônimo não lê nada
+financeiro; funções (`complete_appointment`, `record_payment`, `refund_payment`, `open/close_cash_register`, `add_cash_movement`,
+`pay_expense`, `generate_recurring_expenses`, `finance_summary`, `cash_flow`, `report_by_*`) são atômicas e idempotentes.
+Histórico (pagamentos, receitas, movimentos, auditoria) é imutável por gatilho: erro se corrige com estorno/ajuste.
+Painel: `/admin/financeiro?aba=geral|receitas|despesas|caixa|relatorios|ajustes&p=hoje|7d|mes|anterior|custom`;
+concluir/receber/estornar na **Agenda** (`appointment-finance-panel.tsx`). Comissão: só a estrutura no banco (sem UI, sem % inventado).
+Testes: `npm run test:sql` (26 testes em PGlite, sem tocar o Supabase). Rollback: `supabase/rollback/…_DOWN.sql` (recusa se houver dados).
+Limpeza de dados de teste: `supabase/manutencao/limpar-dados-de-teste.sql`.
+- **Lição:** NUNCA entregar SQL com acento via `clip` (Windows converte UTF-8 → lixo e vai para o banco). Usar
+  `Get-Content -Raw -Encoding UTF8 arq | Set-Clipboard` ou SQL só ASCII (`chr()`), e terminar o SQL com um SELECT que mostre o resultado.
+- Pagamento/movimento de caixa são datados pelo momento real (não pela data do atendimento); receita pela data do atendimento.
+- Pendências: UI de comissões (Fase 6), perfil `barber`, trocar a senha do admin de teste (123456), recuperar logo/fotos.
