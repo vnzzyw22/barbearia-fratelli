@@ -1,66 +1,116 @@
-import { FinanceView } from "@/components/admin/finance-view";
+import { CashTab } from "@/components/admin/finance/cash-tab";
+import { ExpensesTab } from "@/components/admin/finance/expenses-tab";
+import { FINANCE_TABS, FinanceNav, type FinanceTabKey } from "@/components/admin/finance/finance-nav";
+import { IncomeTab } from "@/components/admin/finance/income-tab";
+import { OverviewTab, periodCaption } from "@/components/admin/finance/overview-tab";
+import { ReportsTab } from "@/components/admin/finance/reports-tab";
+import { SettingsTab } from "@/components/admin/finance/settings-tab";
+import { Empty } from "@/components/admin/finance/ui";
 import { pageSubtitleClass, pageTitleClass } from "@/components/admin/theme";
-import { currentMonthISO, shiftMonth } from "@/lib/date";
-import { getTransactionsForRange } from "@/lib/supabase/admin-queries";
+import { todayISO } from "@/lib/date";
+import { resolvePeriod } from "@/lib/finance/period";
+import {
+  generateRecurringExpenses,
+  getCashFlow,
+  getCashMovements,
+  getCategories,
+  getClientReport,
+  getEntries,
+  getFinanceSummary,
+  getMethodReport,
+  getOpenCashRegister,
+  getPaymentMethods,
+  getReceivables,
+  getRecentCashRegisters,
+  getRecurringExpenses,
+  getRegisterMovements,
+  getServiceReport,
+  getStaffReport,
+  isOwner,
+} from "@/lib/supabase/finance-queries";
 
-const TREND_MONTHS = 6;
+const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 
-function lastDayOfMonth(monthISO: string) {
-  const [year, month] = monthISO.split("-").map(Number);
-  return new Date(year, month, 0).getDate();
-}
+export default async function FinanceiroPage(props: PageProps<"/admin/financeiro">) {
+  const sp = await props.searchParams;
 
-export default async function FinanceiroPage(
-  props: PageProps<"/admin/financeiro">,
-) {
-  const searchParams = await props.searchParams;
-  const mesParam = searchParams.mes;
-  const monthISO =
-    (Array.isArray(mesParam) ? mesParam[0] : mesParam) || currentMonthISO();
-
-  // Busca os últimos TREND_MONTHS meses de uma vez (inclui o mês atual) --
-  // dá pra montar tanto o extrato do mês selecionado quanto o gráfico de
-  // tendência com uma query só.
-  const firstTrendMonth = shiftMonth(monthISO, -(TREND_MONTHS - 1));
-  const fromDateISO = `${firstTrendMonth}-01`;
-  const toDateISO = `${monthISO}-${String(lastDayOfMonth(monthISO)).padStart(2, "0")}`;
-
-  const rangeTransactions = await getTransactionsForRange(
-    fromDateISO,
-    toDateISO,
-  );
-
-  const transactions = rangeTransactions.filter(
-    (t) => t.occurred_at.slice(0, 7) === monthISO,
-  );
-
-  const monthlyTotals = Array.from({ length: TREND_MONTHS }, (_, i) => {
-    const month = shiftMonth(monthISO, -(TREND_MONTHS - 1) + i);
-    const monthTx = rangeTransactions.filter(
-      (t) => t.occurred_at.slice(0, 7) === month,
+  if (!(await isOwner())) {
+    return (
+      <div>
+        <h1 className={pageTitleClass}>Financeiro</h1>
+        <div className="mt-6">
+          <Empty>Acesso restrito ao dono da barbearia.</Empty>
+        </div>
+      </div>
     );
-    return {
-      month,
-      income: monthTx
-        .filter((t) => t.type === "income")
-        .reduce((sum, t) => sum + t.amount, 0),
-      expense: monthTx
-        .filter((t) => t.type === "expense")
-        .reduce((sum, t) => sum + t.amount, 0),
-    };
-  });
+  }
+
+  const tabParam = first(sp.aba);
+  const tab: FinanceTabKey = FINANCE_TABS.some((t) => t.key === tabParam) ? (tabParam as FinanceTabKey) : "geral";
+  const period = resolvePeriod({ p: first(sp.p), de: first(sp.de), ate: first(sp.ate) });
+  const fromISO = `${period.from}T00:00:00-03:00`;
+  const toISO = `${period.to}T23:59:59.999-03:00`;
+
+  // Despesas fixas do mês corrente: geradas ao abrir o financeiro (idempotente — 1 por modelo por mês).
+  if (tab === "geral" || tab === "despesas") {
+    await generateRecurringExpenses(todayISO());
+  }
+
+  let content: React.ReactNode;
+
+  if (tab === "geral") {
+    const [summary, cashFlow, methods] = await Promise.all([
+      getFinanceSummary(period.from, period.to),
+      getCashFlow(period.from, period.to),
+      getMethodReport(period.from, period.to),
+    ]);
+    content = <OverviewTab summary={summary} cashFlow={cashFlow} methods={methods} />;
+  } else if (tab === "receitas") {
+    const [entries, receivables] = await Promise.all([
+      getEntries("income", period.from, period.to),
+      getReceivables(),
+    ]);
+    content = <IncomeTab entries={entries} receivables={receivables} />;
+  } else if (tab === "despesas") {
+    const [entries, categories, methods, recurring] = await Promise.all([
+      getEntries("expense", period.from, period.to),
+      getCategories(),
+      getPaymentMethods(),
+      getRecurringExpenses(),
+    ]);
+    content = <ExpensesTab entries={entries} categories={categories} methods={methods} recurring={recurring} />;
+  } else if (tab === "caixa") {
+    const [open, registers, movements] = await Promise.all([
+      getOpenCashRegister(),
+      getRecentCashRegisters(),
+      getCashMovements(fromISO, toISO),
+    ]);
+    const registerMovements = open ? await getRegisterMovements(open.id) : [];
+    content = <CashTab open={open} registers={registers} movements={movements} registerMovements={registerMovements} />;
+  } else if (tab === "relatorios") {
+    const [services, staff, methods, clients] = await Promise.all([
+      getServiceReport(period.from, period.to),
+      getStaffReport(period.from, period.to),
+      getMethodReport(period.from, period.to),
+      getClientReport(period.from, period.to),
+    ]);
+    content = <ReportsTab services={services} staff={staff} methods={methods} clients={clients} />;
+  } else {
+    const [categories, methods] = await Promise.all([getCategories(), getPaymentMethods()]);
+    content = <SettingsTab categories={categories} methods={methods} />;
+  }
+
+  const usesPeriod = FINANCE_TABS.find((t) => t.key === tab)?.usesPeriod;
 
   return (
     <div>
       <h1 className={pageTitleClass}>Financeiro</h1>
       <p className={pageSubtitleClass}>
-        Entradas e saídas simples — não é um sistema contábil.
+        Receita não é lucro: aqui você vê o que foi faturado, o que sobrou e o que realmente entrou no caixa.
+        {usesPeriod && <> Período: <strong className="text-white/80">{period.label}</strong> ({periodCaption(period.from, period.to)}).</>}
       </p>
-      <FinanceView
-        monthISO={monthISO}
-        transactions={transactions}
-        monthlyTotals={monthlyTotals}
-      />
+      <FinanceNav tab={tab} period={period} />
+      <div className="mt-6">{content}</div>
     </div>
   );
 }

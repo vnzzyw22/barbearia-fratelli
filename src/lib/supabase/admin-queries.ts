@@ -37,7 +37,7 @@ export async function getAppointmentsForRange(
   const { data, error } = await supabase
     .from("appointments")
     .select(
-      "id, starts_at, ends_at, status, notes, client:clients(id, name, whatsapp), service:services(id, name, price), staff:staff(id, name)",
+      "id, starts_at, ends_at, status, notes, cancel_reason, client:clients(id, name, whatsapp), service:services(id, name, price), staff:staff(id, name), items:appointment_items(id, description, unit_price_cents, quantity, total_cents, service_id, staff_id), payments(id, kind, reversal_of, method, amount_cents, paid_at)",
     )
     .lt("starts_at", toISO)
     .gt("ends_at", fromISO)

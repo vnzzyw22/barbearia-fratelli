@@ -6,6 +6,7 @@ import {
   getAppointmentsForRange,
   getBlockedSlotsForRange,
 } from "@/lib/supabase/admin-queries";
+import { getOpenCashRegister, getPaymentMethods } from "@/lib/supabase/finance-queries";
 import { getActiveServices } from "@/lib/supabase/queries";
 
 // Início da semana (domingo) que contém `dateISO` — mesmo padrão de
@@ -36,19 +37,21 @@ export default async function AgendaPage(props: PageProps<"/admin/agenda">) {
   const rangeStartISO = `${weekStartISO}T00:00:00-03:00`;
   const rangeEndISO = `${weekEndISO}T23:59:59-03:00`;
 
-  const [appointments, blockedSlots, staff, services] = await Promise.all([
+  const [appointments, blockedSlots, staff, services, methods, openRegister] = await Promise.all([
     getAppointmentsForRange(rangeStartISO, rangeEndISO),
     getBlockedSlotsForRange(rangeStartISO, rangeEndISO),
     getAllStaff(),
     getActiveServices(),
+    getPaymentMethods(),
+    getOpenCashRegister(),
   ]);
 
   return (
     <div>
       <h1 className={pageTitleClass}>Agenda</h1>
       <p className={pageSubtitleClass}>
-        Clique num horário pra ver os detalhes, confirmar, cancelar ou falar
-        com o cliente no WhatsApp.
+        Clique num horário para ver os detalhes, confirmar, atender, concluir
+        (com o recebimento) ou falar com o cliente no WhatsApp.
       </p>
       <AgendaWeekView
         weekStartISO={weekStartISO}
@@ -57,6 +60,8 @@ export default async function AgendaPage(props: PageProps<"/admin/agenda">) {
         blockedSlots={blockedSlots}
         staff={staff}
         services={services}
+        methods={methods}
+        cashOpen={openRegister !== null}
       />
     </div>
   );

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createAppointment } from "@/app/agendar/actions";
+import { financeErrorMessage } from "@/lib/finance/errors";
 import { createClient } from "@/lib/supabase/server";
 import type { AppointmentStatus } from "@/lib/supabase/types";
 
@@ -39,22 +40,39 @@ export async function createManualAppointment(
   return { ok: true };
 }
 
+// Estados manuais do atendimento. "Concluído" NÃO passa por aqui: só a função do banco
+// complete_appointment (que cria pagamento, receita e caixa juntos) pode concluir.
+const MANUAL_STATUSES: AppointmentStatus[] = [
+  "pending",
+  "confirmed",
+  "in_progress",
+  "cancelled",
+  "no_show",
+];
+
 export async function updateAppointmentStatus(
   id: string,
   status: AppointmentStatus,
+  reason?: string,
 ): Promise<ActionResult> {
+  if (!MANUAL_STATUSES.includes(status)) {
+    return { ok: false, error: "Para concluir, use “Concluir atendimento”." };
+  }
+
   const supabase = await createClient();
-  const { error } = await supabase
-    .from("appointments")
-    .update({ status })
-    .eq("id", id);
+  const patch: { status: AppointmentStatus; cancel_reason?: string | null } = { status };
+  if (status === "cancelled" || status === "no_show") patch.cancel_reason = reason?.trim() || null;
+
+  const { error } = await supabase.from("appointments").update(patch).eq("id", id);
 
   if (error) {
     console.error("Erro ao atualizar status do appointment:", error.message);
-    return { ok: false, error: "Não foi possível atualizar o agendamento." };
+    return { ok: false, error: financeErrorMessage(error.message) };
   }
 
   revalidateAgenda();
+  revalidatePath("/admin");
+  revalidatePath("/admin/financeiro");
   return { ok: true };
 }
 

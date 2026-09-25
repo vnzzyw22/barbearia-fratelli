@@ -9,6 +9,7 @@ import {
   deleteBlockedSlot,
   updateAppointmentStatus,
 } from "@/app/admin/(painel)/agenda/actions";
+import { AppointmentFinancePanel } from "@/components/admin/appointment-finance-panel";
 import {
   buttonPrimaryClass,
   buttonSecondaryClass,
@@ -21,6 +22,7 @@ import {
 import { formatPrice } from "@/lib/format";
 import { getWhatsappLink } from "@/lib/whatsapp";
 import { timeToStartsAtISO } from "@/lib/scheduling";
+import type { PaymentMethod } from "@/lib/supabase/finance-types";
 import type {
   AdminAppointment,
   AdminBlockedSlot,
@@ -36,6 +38,8 @@ interface AgendaWeekViewProps {
   blockedSlots: AdminBlockedSlot[];
   staff: AdminStaff[];
   services: Service[];
+  methods: PaymentMethod[];
+  cashOpen: boolean;
 }
 
 type Selection =
@@ -48,13 +52,19 @@ const WEEKDAY_LABELS = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
 const STATUS_LABEL: Record<AppointmentStatus, string> = {
   pending: "Pendente",
   confirmed: "Confirmado",
+  in_progress: "Em atendimento",
+  completed: "Concluído",
   cancelled: "Cancelado",
+  no_show: "Não compareceu",
 };
 
 const STATUS_DOT: Record<AppointmentStatus, string> = {
   pending: "bg-amber-400",
   confirmed: "bg-green-400",
+  in_progress: "bg-sky-400",
+  completed: "bg-emerald-600",
   cancelled: "bg-white/30",
+  no_show: "bg-red-400/60",
 };
 
 function dateKeySP(iso: string) {
@@ -93,12 +103,16 @@ export function AgendaWeekView({
   blockedSlots,
   staff,
   services,
+  methods,
+  cashOpen,
 }: AgendaWeekViewProps) {
   const router = useRouter();
   const [selection, setSelection] = useState<Selection>(null);
   const [statusUpdating, setStatusUpdating] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [staffFilter, setStaffFilter] = useState<string | null>(null);
+  const [cancelOpen, setCancelOpen] = useState<"cancelled" | "no_show" | null>(null);
+  const [cancelReason, setCancelReason] = useState("");
 
   const [blockDate, setBlockDate] = useState<string | null>(null);
   const [blockStart, setBlockStart] = useState("12:00");
@@ -148,6 +162,12 @@ export function AgendaWeekView({
       cancelled = true;
     };
   }, [apptDate, apptServiceId, apptStaffId]);
+
+  // Depois de router.refresh() a lista chega nova; o painel lê sempre a versão atual (itens/pagamentos).
+  const selectedAppointment =
+    selection?.kind === "appointment"
+      ? (appointments.find((a) => a.id === selection.data.id) ?? selection.data)
+      : null;
 
   const filteredAppointments = staffFilter
     ? appointments.filter((a) => a.staff?.id === staffFilter)
@@ -204,12 +224,14 @@ export function AgendaWeekView({
     setApptDate(null);
   }
 
-  async function handleStatusChange(id: string, status: AppointmentStatus) {
+  async function handleStatusChange(id: string, status: AppointmentStatus, reason?: string) {
     setStatusUpdating(true);
     setActionError(null);
-    const result = await updateAppointmentStatus(id, status);
+    const result = await updateAppointmentStatus(id, status, reason);
     setStatusUpdating(false);
     if (result.ok) {
+      setCancelOpen(null);
+      setCancelReason("");
       setSelection(null);
       router.refresh();
     } else {
@@ -366,7 +388,7 @@ export function AgendaWeekView({
                       isSelected
                         ? "bg-brand-red text-brand-black"
                         : "bg-white/[0.06] text-white/85 hover:bg-brand-red hover:text-brand-black"
-                    } ${appointment.status === "cancelled" ? "opacity-40 line-through" : ""}`}
+                    } ${appointment.status === "cancelled" || appointment.status === "no_show" ? "opacity-40 line-through" : ""}`}
                   >
                     <span
                       className={`h-1.5 w-1.5 shrink-0 rounded-full ${STATUS_DOT[appointment.status]}`}
@@ -424,42 +446,42 @@ export function AgendaWeekView({
 
       {actionError && <p className="text-sm text-red-400">{actionError}</p>}
 
-      {selection?.kind === "appointment" && (
+      {selectedAppointment && (
         <div className={`flex flex-col gap-3 ${cardClass}`}>
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="font-nav text-sm font-bold tracking-wide text-white uppercase">
-                {selection.data.client?.name ?? "Cliente removido"}
+                {selectedAppointment.client?.name ?? "Cliente removido"}
               </p>
               <p className="mt-1 text-sm text-white/60">
-                {selection.data.service?.name ?? "Serviço removido"}
-                {selection.data.service && (
-                  <> — {formatPrice(selection.data.service.price)}</>
-                )}
-                {selection.data.staff && <> · {selection.data.staff.name}</>}
+                {selectedAppointment.service?.name ?? "Serviço removido"}
+                {selectedAppointment.staff && <> · {selectedAppointment.staff.name}</>}
               </p>
               <p className="mt-1 text-sm text-white/60">
-                {timeLabel(selection.data.starts_at)}–
-                {timeLabel(selection.data.ends_at)}
+                {timeLabel(selectedAppointment.starts_at)}–
+                {timeLabel(selectedAppointment.ends_at)}
               </p>
-              {selection.data.notes && (
+              {selectedAppointment.notes && (
+                <p className="mt-1 text-sm text-white/40">{selectedAppointment.notes}</p>
+              )}
+              {selectedAppointment.cancel_reason && (
                 <p className="mt-1 text-sm text-white/40">
-                  {selection.data.notes}
+                  Motivo: {selectedAppointment.cancel_reason}
                 </p>
               )}
             </div>
             <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs text-white/60">
-              {STATUS_LABEL[selection.data.status]}
+              {STATUS_LABEL[selectedAppointment.status]}
             </span>
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {selection.data.client?.whatsapp && (
+            {selectedAppointment.client?.whatsapp && (
               <a
                 href={
                   getWhatsappLink(
-                    selection.data.client.whatsapp,
-                    `Olá, ${selection.data.client.name}! Sobre seu horário de ${timeLabel(selection.data.starts_at)} na Fratelli Barber Club.`,
+                    selectedAppointment.client.whatsapp,
+                    `Olá, ${selectedAppointment.client.name}! Sobre seu horário de ${timeLabel(selectedAppointment.starts_at)} na Fratelli Barber Club.`,
                   ) ?? undefined
                 }
                 target="_blank"
@@ -469,34 +491,88 @@ export function AgendaWeekView({
                 WhatsApp
               </a>
             )}
-            {selection.data.status === "pending" && (
+            {selectedAppointment.status === "pending" && (
               <button
                 type="button"
                 disabled={statusUpdating}
-                onClick={() => handleStatusChange(selection.data.id, "confirmed")}
+                onClick={() => handleStatusChange(selectedAppointment.id, "confirmed")}
                 className={buttonPrimaryClass}
               >
                 Confirmar
               </button>
             )}
-            {selection.data.status !== "cancelled" && (
+            {(selectedAppointment.status === "pending" ||
+              selectedAppointment.status === "confirmed") && (
               <button
                 type="button"
                 disabled={statusUpdating}
-                onClick={() => handleStatusChange(selection.data.id, "cancelled")}
+                onClick={() => handleStatusChange(selectedAppointment.id, "in_progress")}
                 className={buttonSecondaryClass}
               >
-                Cancelar
+                Iniciar atendimento
               </button>
+            )}
+            {(selectedAppointment.status === "pending" ||
+              selectedAppointment.status === "confirmed" ||
+              selectedAppointment.status === "in_progress") && (
+              <>
+                <button
+                  type="button"
+                  disabled={statusUpdating}
+                  onClick={() => setCancelOpen(cancelOpen === "no_show" ? null : "no_show")}
+                  className={buttonSecondaryClass}
+                >
+                  Não compareceu
+                </button>
+                <button
+                  type="button"
+                  disabled={statusUpdating}
+                  onClick={() => setCancelOpen(cancelOpen === "cancelled" ? null : "cancelled")}
+                  className={buttonSecondaryClass}
+                >
+                  Cancelar
+                </button>
+              </>
             )}
             <button
               type="button"
-              onClick={() => setSelection(null)}
+              onClick={() => {
+                setSelection(null);
+                setCancelOpen(null);
+              }}
               className="font-nav text-xs font-bold tracking-widest text-white/40 uppercase hover:text-white"
             >
               Fechar
             </button>
           </div>
+
+          {cancelOpen && (
+            <div className="flex flex-wrap items-center gap-2">
+              <input
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                placeholder={cancelOpen === "cancelled" ? "Motivo do cancelamento (opcional)" : "Observação (opcional)"}
+                className={`${fieldClass} min-w-56 flex-1`}
+              />
+              <button
+                type="button"
+                disabled={statusUpdating}
+                onClick={() => handleStatusChange(selectedAppointment.id, cancelOpen, cancelReason)}
+                className={buttonPrimaryClass}
+              >
+                {cancelOpen === "cancelled" ? "Confirmar cancelamento" : "Confirmar falta"}
+              </button>
+            </div>
+          )}
+
+          <AppointmentFinancePanel
+            key={selectedAppointment.id}
+            appointment={selectedAppointment}
+            services={services}
+            methods={methods}
+            cashOpen={cashOpen}
+            onChanged={() => router.refresh()}
+          />
         </div>
       )}
 

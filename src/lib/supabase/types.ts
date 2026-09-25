@@ -1,3 +1,5 @@
+import type { AppointmentItemRow, AppointmentPaymentRow } from "./finance-types";
+
 // Tipos manuais espelhando supabase/migrations/20260828120000_schema_fase1.sql.
 // Cobrem só as colunas usadas pelo site público por enquanto.
 
@@ -54,7 +56,13 @@ export interface AdminGalleryPhoto extends GalleryPhoto {
   display_order: number;
 }
 
-export type AppointmentStatus = "pending" | "confirmed" | "cancelled";
+export type AppointmentStatus =
+  | "pending"
+  | "confirmed"
+  | "in_progress"
+  | "completed"
+  | "cancelled"
+  | "no_show";
 
 export interface AdminAppointment {
   id: string;
@@ -65,6 +73,10 @@ export interface AdminAppointment {
   client: { id: string; name: string; whatsapp: string | null } | null;
   service: { id: string; name: string; price: number } | null;
   staff: { id: string; name: string } | null;
+  // Financeiro: só o dono enxerga (RLS); para outros usuários vêm vazios.
+  items: AppointmentItemRow[];
+  payments: AppointmentPaymentRow[];
+  cancel_reason: string | null;
 }
 
 export interface AdminBlockedSlot {

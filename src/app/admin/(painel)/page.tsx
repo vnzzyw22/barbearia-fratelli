@@ -1,10 +1,8 @@
 import Link from "next/link";
 import { currentMonthISO, todayISO } from "@/lib/date";
-import { formatPrice } from "@/lib/format";
-import {
-  getAppointmentsForRange,
-  getTransactionsForRange,
-} from "@/lib/supabase/admin-queries";
+import { formatCents } from "@/lib/finance/money";
+import { getAppointmentsForRange } from "@/lib/supabase/admin-queries";
+import { getFinanceSummary } from "@/lib/supabase/finance-queries";
 import {
   badgeClass,
   cardClass,
@@ -18,13 +16,19 @@ import type { AdminAppointment, AppointmentStatus } from "@/lib/supabase/types";
 const STATUS_LABEL: Record<AppointmentStatus, string> = {
   pending: "Pendente",
   confirmed: "Confirmado",
+  in_progress: "Em atendimento",
+  completed: "Concluído",
   cancelled: "Cancelado",
+  no_show: "Não compareceu",
 };
 
-const STATUS_TONE: Record<AppointmentStatus, "amber" | "green" | "neutral"> = {
+const STATUS_TONE: Record<AppointmentStatus, "amber" | "green" | "red" | "neutral"> = {
   pending: "amber",
   confirmed: "green",
+  in_progress: "amber",
+  completed: "green",
   cancelled: "neutral",
+  no_show: "red",
 };
 
 function timeLabel(iso: string) {
@@ -82,26 +86,17 @@ export default async function DashboardPage() {
   const monthStart = `${monthISO}-01`;
   const monthEnd = `${monthISO}-${String(lastDayOfMonth(monthISO)).padStart(2, "0")}`;
 
-  const [todayAppointments, upcomingAppointments, transactions] =
+  const [todayAppointments, upcomingAppointments, monthSummary, todaySummary] =
     await Promise.all([
       getAppointmentsForRange(todayStartISO, todayEndISO),
       getAppointmentsForRange(todayEndISO, upcomingEndISO),
-      getTransactionsForRange(monthStart, monthEnd),
+      getFinanceSummary(monthStart, monthEnd),
+      getFinanceSummary(todayDate, todayDate),
     ]);
 
-  const activeTodayAppointments = todayAppointments.filter(
-    (a) => a.status !== "cancelled",
-  );
-  const activeUpcomingAppointments = upcomingAppointments.filter(
-    (a) => a.status !== "cancelled",
-  );
-
-  const income = transactions
-    .filter((t) => t.type === "income")
-    .reduce((sum, t) => sum + t.amount, 0);
-  const expense = transactions
-    .filter((t) => t.type === "expense")
-    .reduce((sum, t) => sum + t.amount, 0);
+  const isOpen = (a: AdminAppointment) => a.status !== "cancelled" && a.status !== "no_show";
+  const activeTodayAppointments = todayAppointments.filter(isOpen);
+  const activeUpcomingAppointments = upcomingAppointments.filter(isOpen);
 
   return (
     <div className="flex flex-col gap-8">
@@ -110,26 +105,36 @@ export default async function DashboardPage() {
         <p className={pageSubtitleClass}>Resumo do negócio.</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className={cardClass}>
-          <p className="text-xs text-white/50">Entradas do mês</p>
-          <p className="mt-1 text-lg font-bold text-green-400">
-            {formatPrice(income)}
-          </p>
+      {monthSummary && todaySummary && (
+        <div className="flex flex-col gap-3">
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <div className={cardClass}>
+              <p className="text-xs text-white/50">Receita hoje</p>
+              <p className="mt-1 text-lg font-bold text-green-400">{formatCents(todaySummary.revenue_cents)}</p>
+              <p className="mt-1 text-xs text-white/40">{todaySummary.appointments_completed} atendimento(s) concluído(s)</p>
+            </div>
+            <div className={cardClass}>
+              <p className="text-xs text-white/50">Receita do mês</p>
+              <p className="mt-1 text-lg font-bold text-green-400">{formatCents(monthSummary.revenue_cents)}</p>
+            </div>
+            <div className={cardClass}>
+              <p className="text-xs text-white/50">Despesas do mês</p>
+              <p className="mt-1 text-lg font-bold text-red-400">{formatCents(monthSummary.expenses_cents)}</p>
+            </div>
+            <div className={cardClass}>
+              <p className="text-xs text-white/50">Resultado do mês</p>
+              <p className={`mt-1 text-lg font-bold ${monthSummary.result_cents < 0 ? "text-red-400" : "text-white"}`}>
+                {formatCents(monthSummary.result_cents)}
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-white/60">
+            <span>A receber: <strong className="text-white/85">{formatCents(monthSummary.receivable_cents)}</strong></span>
+            <span>A pagar: <strong className="text-white/85">{formatCents(monthSummary.payable_cents)}</strong></span>
+            <Link href="/admin/financeiro" className={linkPrimaryClass}>Abrir financeiro</Link>
+          </div>
         </div>
-        <div className={cardClass}>
-          <p className="text-xs text-white/50">Saídas do mês</p>
-          <p className="mt-1 text-lg font-bold text-red-400">
-            {formatPrice(expense)}
-          </p>
-        </div>
-        <div className={cardClass}>
-          <p className="text-xs text-white/50">Saldo do mês</p>
-          <p className="mt-1 text-lg font-bold text-white">
-            {formatPrice(income - expense)}
-          </p>
-        </div>
-      </div>
+      )}
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
