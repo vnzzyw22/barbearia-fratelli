@@ -100,6 +100,7 @@ export interface CashMovement {
   occurred_at: string;
   source: "payment" | "refund" | "expense" | "manual" | "adjustment";
   description: string | null;
+  payment?: { client: { name: string } | null } | null;
 }
 
 export interface PaymentRow {

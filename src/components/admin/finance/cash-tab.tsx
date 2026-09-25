@@ -24,11 +24,13 @@ export function CashTab({
   registers,
   movements,
   registerMovements,
+  closedDiff,
 }: {
   open: CashRegister | null;
   registers: CashRegister[];
   movements: CashMovement[];
   registerMovements: CashMovement[]; // movimentos do caixa aberto (para o esperado)
+  closedDiff: number | null; // diferença do fechamento que acabou de acontecer
 }) {
   const cashIn = registerMovements.filter((m) => m.method === "cash" && m.direction === "in").reduce((s, m) => s + m.amount_cents, 0);
   const cashOut = registerMovements.filter((m) => m.method === "cash" && m.direction === "out").reduce((s, m) => s + m.amount_cents, 0);
@@ -37,6 +39,14 @@ export function CashTab({
 
   return (
     <div className="flex flex-col gap-8">
+      {closedDiff !== null && (
+        <p
+          role="status"
+          className={`border p-4 text-sm ${closedDiff === 0 ? "border-green-500/40 text-green-400" : "border-amber-400/40 text-amber-300"}`}
+        >
+          Caixa fechado. {closedDiff === 0 ? "Sem diferença." : closedDiff > 0 ? `Sobrou ${formatCents(closedDiff)}.` : `Faltou ${formatCents(-closedDiff)}.`}
+        </p>
+      )}
       {open ? (
         <Block
           title="Caixa aberto"
@@ -81,7 +91,7 @@ export function CashTab({
                     <td className={`${tdClass} whitespace-nowrap`}>{dateTimeBR(m.occurred_at)}</td>
                     <td className={tdClass}>{SOURCE_LABEL[m.source]}</td>
                     <td className={tdClass}>{METHOD_LABEL[m.method]}</td>
-                    <td className={tdClass}>{m.description ?? "—"}</td>
+                    <td className={tdClass}>{m.payment?.client?.name ? `${m.payment.client.name}${m.source === "refund" ? " — " + (m.description ?? "") : ""}` : (m.description ?? "—")}</td>
                     <td className={`${tdNumClass} ${m.direction === "in" ? "text-green-400" : "text-red-400"}`}>
                       {m.direction === "in" ? "+" : "−"}{formatCents(m.amount_cents)}
                     </td>

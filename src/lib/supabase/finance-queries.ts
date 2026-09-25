@@ -137,7 +137,7 @@ export async function getCashMovements(fromISO: string, toISO: string): Promise<
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("cash_movements")
-    .select("id, cash_register_id, direction, amount_cents, method, occurred_at, source, description")
+    .select("id, cash_register_id, direction, amount_cents, method, occurred_at, source, description, payment:payments(client:clients(name))")
     .gte("occurred_at", fromISO)
     .lte("occurred_at", toISO)
     .order("occurred_at", { ascending: false });
@@ -145,7 +145,7 @@ export async function getCashMovements(fromISO: string, toISO: string): Promise<
     console.error("Erro ao buscar movimentos de caixa:", error.message);
     return [];
   }
-  return data as CashMovement[];
+  return data as unknown as CashMovement[];
 }
 
 export async function getPayments(fromISO: string, toISO: string): Promise<PaymentRow[]> {

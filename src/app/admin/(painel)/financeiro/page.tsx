@@ -86,7 +86,17 @@ export default async function FinanceiroPage(props: PageProps<"/admin/financeiro
       getCashMovements(fromISO, toISO),
     ]);
     const registerMovements = open ? await getRegisterMovements(open.id) : [];
-    content = <CashTab open={open} registers={registers} movements={movements} registerMovements={registerMovements} />;
+    const closedParam = first(sp.fechado);
+    const closedDiff = closedParam !== undefined && /^-?\d+$/.test(closedParam) ? Number(closedParam) : null;
+    content = (
+      <CashTab
+        open={open}
+        registers={registers}
+        movements={movements}
+        registerMovements={registerMovements}
+        closedDiff={closedDiff}
+      />
+    );
   } else if (tab === "relatorios") {
     const [services, staff, methods, clients] = await Promise.all([
       getServiceReport(period.from, period.to),

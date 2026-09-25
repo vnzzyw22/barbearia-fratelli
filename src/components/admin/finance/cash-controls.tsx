@@ -46,7 +46,6 @@ export function CloseCashForm({ expectedCents }: { expectedCents: number }) {
   const [notes, setNotes] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<{ differenceCents: number; expectedCents: number } | null>(null);
 
   const countedCents = parseMoneyToCents(counted);
   const preview = countedCents === null ? null : countedCents - expectedCents;
@@ -60,18 +59,9 @@ export function CloseCashForm({ expectedCents }: { expectedCents: number }) {
     const r = await closeCashRegister(countedCents, notes);
     setBusy(false);
     if (r.ok) {
-      setResult(r.data);
-      router.refresh();
+      // o formulário some quando o caixa fecha; o resultado vai para um aviso na própria página
+      router.replace(`/admin/financeiro?aba=caixa&p=hoje&fechado=${r.data.differenceCents}`);
     } else setError(r.error);
-  }
-
-  if (result) {
-    const d = result.differenceCents;
-    return (
-      <p className={`border p-4 text-sm ${d === 0 ? "border-green-500/40 text-green-400" : "border-amber-400/40 text-amber-300"}`}>
-        Caixa fechado. {d === 0 ? "Sem diferença." : d > 0 ? `Sobrou ${formatCents(d)}.` : `Faltou ${formatCents(-d)}.`}
-      </p>
-    );
   }
 
   return (
