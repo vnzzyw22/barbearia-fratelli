@@ -450,3 +450,60 @@ test("apagar agendamento não concluído leva os itens; concluído/pago continua
   await expectError(w.db.query("delete from public.appointments where id=$1", [b]), "immutable|foreign key|violates");
   assert.equal(await count(w, "appointments", "id=$1", [b]), 1);
 });
+
+test("correção de acentos: conserta nomes corrompidos e o texto da comissão, e é idempotente", async () => {
+  const w = await world();
+  // simula o estrago do `clip` (UTF-8 lido como CP437)
+  await w.db.query("update public.financial_categories set name = 'mojibake_' || display_order where kind='expense' and display_order in (3,5,9)");
+  await w.db.query("update public.financial_categories set name = 'mojibake2' where system_key = 'expense_commissions'");
+  await w.db.query("update public.payment_methods set name = 'mojibake_' || code where code in ('debit','credit')");
+  await applyMigration(w.db, "20260925130000_items_cascade.sql");
+  await applyMigration(w.db, "20260925140000_fix_acentos.sql");
+  await applyMigration(w.db, "20260925140000_fix_acentos.sql"); // idempotente
+  const names = (await rows(w, "select name from public.financial_categories where kind='expense' order by display_order")).map((r) => r.name);
+  assert.deepEqual(names.slice(0, 13), ["Aluguel", "Energia", "Água", "Internet", "Salários", "Impostos", "Produtos", "Equipamentos", "Manutenção", "Marketing", "Comissões", "Taxas", "Outros"]);
+  const methods = (await rows(w, "select name from public.payment_methods order by display_order")).map((r) => r.name);
+  assert.deepEqual(methods, ["Pix", "Dinheiro", "Débito", "Crédito", "Outro"]);
+  // a função continua funcionando e gera o texto certo
+  await own(w, () => w.db.query("insert into public.commission_rules (staff_id, rate_bps) values ($1, 1000)", [w.staff.a]));
+  const id = await book(w);
+  await complete(w, id, [{ method: "pix", amount_cents: 5000 }]);
+  const e = await one(w, "select description from public.financial_entries where commission_id is not null");
+  assert.equal(e.description, "Comissão — Corte");
+});
+
+test("limpeza de teste: remove só o rastro dos testes e preserva dados reais", async () => {
+  const { readFileSync } = await import("node:fs");
+  const w = await world();
+  // dado "real" que NÃO pode ser tocado: um atendimento concluído de cliente real
+  const real = await book(w, { start: "2026-10-01T13:00:00Z", client: w.client });
+  await complete(w, real, [{ method: "pix", amount_cents: 5000 }]);
+  // rastro de teste completo
+  await w.db.query("update public.clients set name = 'TESTE AUTOMATICO x' where id = $1", [w.client2]);
+  await openCash(w, 5000);
+  const t1 = await book(w, { start: "2026-10-05T13:00:00Z", client: w.client2 });
+  await w.db.query("update public.appointments set notes = 'TESTE AUTOMATICO n' where id = $1", [t1]);
+  await complete(w, t1, [{ method: "cash", amount_cents: 5000 }]);
+  const p = await one(w, "select id from public.payments where appointment_id = $1", [t1]);
+  await own(w, () => w.db.query("select public.refund_payment($1,'teste')", [p.id]));
+  await own(w, () => w.db.query("select public.add_cash_movement('in',1000,'TESTE suprimento')"));
+  const ex = await newExpense(w, { desc: "TESTE AUTOMATICO aluguel", cents: 1000 });
+  await own(w, () => w.db.query("select public.pay_expense($1,'cash')", [ex]));
+  await own(w, () => w.db.query("select public.close_cash_register(0)"));
+
+  await w.db.exec(readFileSync(new URL("../../supabase/manutencao/limpar-dados-de-teste.sql", import.meta.url), "utf8"));
+
+  assert.equal(await count(w, "appointments", "notes like 'TESTE AUTOMATICO%'"), 0);
+  assert.equal(await count(w, "clients", "name like 'TESTE AUTOMATICO%'"), 0);
+  assert.equal(await count(w, "financial_entries", "description like 'TESTE AUTOMATICO%'"), 0);
+  assert.equal(await count(w, "cash_registers"), 0);
+  assert.equal(await count(w, "cash_movements", "source in ('manual','refund','expense')"), 0);
+  assert.equal(await count(w, "payments", "appointment_id = $1", [t1]), 0);
+  // o real continua intacto: 1 atendimento concluído, 1 pagamento, 1 receita, 1 movimento
+  assert.equal(await count(w, "appointments", "id = $1 and status = 'completed'", [real]), 1);
+  assert.equal(await count(w, "payments"), 1);
+  assert.equal(await count(w, "financial_entries", "kind = 'income'"), 1);
+  assert.equal(await count(w, "cash_movements"), 1);
+  // e os gatilhos voltam a proteger o histórico depois da limpeza
+  await expectError(w.db.query("delete from public.payments"), "financial_history_is_immutable");
+});

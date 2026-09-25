@@ -30,10 +30,10 @@ export function OpenCashForm() {
 
   return (
     <form onSubmit={submit} className="flex flex-wrap items-end gap-3 border border-white/10 bg-teal-deep p-4">
-      <div className="flex flex-col gap-1.5">
-        <label className={labelClass}>Dinheiro na gaveta (troco inicial)</label>
+      <label className="flex flex-col gap-1.5">
+<span className={labelClass}>Dinheiro na gaveta (troco inicial)</span>
         <input inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} className={`${fieldClass} w-40 text-right`} />
-      </div>
+      </label>
       <button type="submit" disabled={busy} className={buttonPrimaryClass}>{busy ? "Abrindo..." : "Abrir caixa"}</button>
       {error && <p role="alert" className="w-full text-sm text-red-400">{error}</p>}
     </form>
@@ -76,14 +76,14 @@ export function CloseCashForm({ expectedCents }: { expectedCents: number }) {
 
   return (
     <form onSubmit={submit} className="flex flex-wrap items-end gap-3 border border-white/10 bg-teal-deep p-4">
-      <div className="flex flex-col gap-1.5">
-        <label className={labelClass}>Dinheiro contado na gaveta</label>
+      <label className="flex flex-col gap-1.5">
+<span className={labelClass}>Dinheiro contado na gaveta</span>
         <input inputMode="decimal" placeholder="0,00" value={counted} onChange={(e) => setCounted(e.target.value)} className={`${fieldClass} w-40 text-right`} />
-      </div>
-      <div className="flex min-w-48 flex-1 flex-col gap-1.5">
-        <label className={labelClass}>Observação (opcional)</label>
+      </label>
+      <label className="flex min-w-48 flex-1 flex-col gap-1.5">
+<span className={labelClass}>Observação (opcional)</span>
         <input value={notes} onChange={(e) => setNotes(e.target.value)} className={fieldClass} />
-      </div>
+      </label>
       <button type="submit" disabled={busy || countedCents === null} className={buttonPrimaryClass}>{busy ? "Fechando..." : "Fechar caixa"}</button>
       {preview !== null && (
         <p className={`w-full text-sm ${preview === 0 ? "text-green-400" : "text-amber-300"}`}>
@@ -121,8 +121,8 @@ export function CashMovementForm() {
 
   return (
     <form onSubmit={submit} className="flex flex-wrap items-end gap-3 border border-white/10 bg-teal-deep p-4">
-      <div className="flex flex-col gap-1.5">
-        <label className={labelClass}>Tipo</label>
+      <label className="flex flex-col gap-1.5">
+<span className={labelClass}>Tipo</span>
         <select value={`${kind}:${direction}`} onChange={(e) => {
           const [k, d] = e.target.value.split(":");
           setKind(k as "manual" | "adjustment");
@@ -133,15 +133,15 @@ export function CashMovementForm() {
           <option value="adjustment:in">Ajuste: sobra</option>
           <option value="adjustment:out">Ajuste: falta</option>
         </select>
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <label className={labelClass}>Valor (R$)</label>
+      </label>
+      <label className="flex flex-col gap-1.5">
+<span className={labelClass}>Valor (R$)</span>
         <input inputMode="decimal" placeholder="0,00" value={amount} onChange={(e) => setAmount(e.target.value)} className={`${fieldClass} w-32 text-right`} />
-      </div>
-      <div className="flex min-w-48 flex-[2] flex-col gap-1.5">
-        <label className={labelClass}>Descrição (obrigatória)</label>
+      </label>
+      <label className="flex min-w-48 flex-[2] flex-col gap-1.5">
+<span className={labelClass}>Descrição (obrigatória)</span>
         <input required value={description} onChange={(e) => setDescription(e.target.value)} className={fieldClass} />
-      </div>
+      </label>
       <button type="submit" disabled={busy} className={buttonSecondaryClass}>Registrar</button>
       {error && <p role="alert" className="w-full text-sm text-red-400">{error}</p>}
     </form>

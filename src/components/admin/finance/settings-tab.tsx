@@ -36,14 +36,14 @@ function MethodRow({ method }: { method: PaymentMethod }) {
   return (
     <div className="flex flex-wrap items-end gap-3 border-b border-white/10 px-3 py-3 last:border-b-0">
       <span className="min-w-28 flex-1 text-sm text-white">{METHOD_LABEL[method.code] ?? method.name}</span>
-      <div className="flex flex-col gap-1.5">
-        <label className={labelClass}>Taxa (%)</label>
+      <label className="flex flex-col gap-1.5">
+<span className={labelClass}>Taxa (%)</span>
         <input inputMode="decimal" value={fee} onChange={(e) => setFee(e.target.value)} className={`${fieldClass} w-24 text-right`} />
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <label className={labelClass}>Recebe em (dias)</label>
+      </label>
+      <label className="flex flex-col gap-1.5">
+<span className={labelClass}>Recebe em (dias)</span>
         <input inputMode="numeric" value={days} onChange={(e) => setDays(e.target.value)} className={`${fieldClass} w-24 text-right`} />
-      </div>
+      </label>
       <label className="flex items-center gap-2 pb-2 text-sm text-white/70">
         <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} /> Ativa
       </label>

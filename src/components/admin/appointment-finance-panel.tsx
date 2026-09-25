@@ -202,15 +202,15 @@ function CompleteForm({ appointment, services, methods, cashOpen, onChanged }: P
         })}
 
         <div className="mt-1 flex flex-wrap items-end gap-2">
-          <div className="flex min-w-48 flex-1 flex-col gap-1.5">
-            <label className={labelClass}>Adicionar serviço</label>
+          <label className="flex min-w-48 flex-1 flex-col gap-1.5">
+<span className={labelClass}>Adicionar serviço</span>
             <select value={addServiceId} onChange={(e) => setAddServiceId(e.target.value)} className={fieldClass}>
               <option value="">Selecione</option>
               {services.map((s) => (
                 <option key={s.id} value={s.id}>{s.name} — {formatCents(Math.round(s.price * 100))}</option>
               ))}
             </select>
-          </div>
+          </label>
           <button
             type="button"
             disabled={busy || !addServiceId}
@@ -225,10 +225,10 @@ function CompleteForm({ appointment, services, methods, cashOpen, onChanged }: P
           </button>
         </div>
         <div className="flex flex-wrap items-end gap-2">
-          <div className="flex min-w-48 flex-1 flex-col gap-1.5">
-            <label className={labelClass}>Item avulso (ex.: produto)</label>
+          <label className="flex min-w-48 flex-1 flex-col gap-1.5">
+<span className={labelClass}>Item avulso (ex.: produto)</span>
             <input value={customDesc} onChange={(e) => setCustomDesc(e.target.value)} className={fieldClass} placeholder="Descrição" />
-          </div>
+          </label>
           <input
             aria-label="Valor do item avulso"
             inputMode="decimal"

@@ -26,10 +26,10 @@ import {
 
 function Field({ label, children, className = "" }: { label: string; children: React.ReactNode; className?: string }) {
   return (
-    <div className={`flex min-w-40 flex-1 flex-col gap-1.5 ${className}`}>
-      <label className={labelClass}>{label}</label>
+    <label className={`flex min-w-40 flex-1 flex-col gap-1.5 ${className}`}>
+      <span className={labelClass}>{label}</span>
       {children}
-    </div>
+    </label>
   );
 }
 
