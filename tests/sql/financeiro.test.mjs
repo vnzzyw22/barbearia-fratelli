@@ -438,3 +438,15 @@ test("relatórios: serviços, barbeiros, formas de pagamento, clientes e fluxo d
   const sum = await own(w, async () => (await w.db.query("select public.finance_summary('2026-01-01','2026-12-31') r")).rows[0].r);
   assert.equal(n(sum.appointments_completed), 3); assert.equal(n(sum.revenue_cents), 13000);
 });
+
+test("apagar agendamento não concluído leva os itens; concluído/pago continua protegido", async () => {
+  const w = await world();
+  await applyMigration(w.db, "20260925130000_items_cascade.sql");
+  const a = await book(w);
+  await w.db.query("delete from public.appointments where id=$1", [a]);
+  assert.equal(await count(w, "appointment_items", "appointment_id=$1", [a]), 0);
+  const b = await book(w, { start: "2026-10-05T15:00:00Z" });
+  await complete(w, b, [{ method: "pix", amount_cents: 5000 }]);
+  await expectError(w.db.query("delete from public.appointments where id=$1", [b]), "immutable|foreign key|violates");
+  assert.equal(await count(w, "appointments", "id=$1", [b]), 1);
+});
