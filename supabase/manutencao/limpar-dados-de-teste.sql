@@ -7,9 +7,10 @@
 --   * o rastro na auditoria dessas linhas.
 -- O histórico financeiro é protegido por gatilhos (por design), então este script desliga os
 -- gatilhos só nesta sessão (session_replication_role = replica) e apaga na ordem certa das
--- dependências. Rode UMA vez, no SQL Editor. Se algo falhar, nada é apagado (transação).
-begin;
-set local session_replication_role = replica;
+-- dependências. Rode UMA vez, no SQL Editor. Tudo roda em UM comando (bloco DO): se algo falhar, nada é apagado.
+do $limpeza$
+begin
+perform set_config('session_replication_role', 'replica', true);
 
 create temp table t_appts on commit drop as
   select id from public.appointments where notes like 'TESTE AUTOMATICO%'
@@ -61,6 +62,8 @@ delete from public.audit_logs
     or (entity = 'cash_movements'    and entity_id in (select id::text from t_moves))
     or (entity = 'commissions'       and entity_id in (select id::text from t_commissions))
     or (entity = 'cash_registers'    and entity_id not in (select id::text from public.cash_registers));
+end
+$limpeza$;
 
 -- conferência (deve mostrar zeros nos testes)
 select
@@ -70,5 +73,3 @@ select
   (select count(*) from public.payments)                                                    as pagamentos_restantes,
   (select count(*) from public.cash_movements)                                              as movimentos_restantes,
   (select count(*) from public.cash_registers)                                              as caixas_restantes;
-
-commit;
