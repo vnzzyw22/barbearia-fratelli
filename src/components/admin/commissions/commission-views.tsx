@@ -148,7 +148,7 @@ export function CommissionDetail({ rows, methods }: { rows: CommissionRow[]; met
                 <td className={tdClass}><StatusBadge status={r.status} /></td>
                 <td className={tdClass}>
                   {r.status === "pending" && r.entry_id && (
-                    <ExpenseRowActions id={r.entry_id} description={`Comissão — ${r.description}`} amountCents={r.amount_cents} methods={methods} />
+                    <ExpenseRowActions id={r.entry_id} description={`Comissão — ${r.description}`} amountCents={r.amount_cents} methods={methods} allowCancel={false} />
                   )}
                 </td>
               </tr>
@@ -176,7 +176,7 @@ export function CommissionDetail({ rows, methods }: { rows: CommissionRow[]; met
             </dl>
             {r.status === "pending" && r.entry_id && (
               <div className="mt-3 border-t border-white/10 pt-3">
-                <ExpenseRowActions id={r.entry_id} description={`Comissão — ${r.description}`} amountCents={r.amount_cents} methods={methods} />
+                <ExpenseRowActions id={r.entry_id} description={`Comissão — ${r.description}`} amountCents={r.amount_cents} methods={methods} allowCancel={false} />
               </div>
             )}
           </li>

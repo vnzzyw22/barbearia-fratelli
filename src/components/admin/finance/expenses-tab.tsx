@@ -99,7 +99,7 @@ export function ExpensesTab({
                     </td>
                     <td className={tdClass}>
                       {e.status === "pending" && (
-                        <ExpenseRowActions id={e.id} description={e.description} amountCents={e.amount_cents} methods={methods} />
+                        <ExpenseRowActions id={e.id} description={e.description} amountCents={e.amount_cents} methods={methods} allowCancel={!e.commission_id} />
                       )}
                     </td>
                   </tr>

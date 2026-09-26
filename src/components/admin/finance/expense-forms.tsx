@@ -141,11 +141,13 @@ export function ExpenseRowActions({
   description,
   amountCents,
   methods,
+  allowCancel = true,
 }: {
   id: string;
   description: string;
   amountCents: number;
   methods: PaymentMethod[];
+  allowCancel?: boolean; // comissão não se cancela aqui: o vínculo com a comissão ficaria inconsistente
 }) {
   const router = useRouter();
   const [method, setMethod] = useState("pix");
@@ -181,9 +183,11 @@ export function ExpenseRowActions({
           ))}
         </select>
         <button type="button" disabled={busy} onClick={pay} className={`${buttonPrimaryClass} py-1`}>Pagar</button>
-        <button type="button" disabled={busy} onClick={cancel} className="font-nav text-xs font-bold tracking-widest text-white/40 uppercase hover:text-red-400">
-          Cancelar
-        </button>
+        {allowCancel && (
+          <button type="button" disabled={busy} onClick={cancel} className="font-nav text-xs font-bold tracking-widest text-white/40 uppercase hover:text-red-400">
+            Cancelar
+          </button>
+        )}
       </div>
       {error && <p role="alert" className="text-xs text-red-400">{error}</p>}
     </div>
