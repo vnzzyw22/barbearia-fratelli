@@ -1,4 +1,4 @@
-// Tipos manuais das tabelas/funções financeiras (migração 20260925120000). Valores em CENTAVOS.
+// Tipos manuais das tabelas/funções financeiras (migrações 20260925120000 e 20260926120000). Valores em CENTAVOS.
 
 export type PaymentMethodCode = "pix" | "cash" | "debit" | "credit" | "other";
 
@@ -22,10 +22,14 @@ export interface FinancialCategory {
 export interface FinanceSummary {
   revenue_cents: number;
   expenses_cents: number;
-  result_cents: number;
+  result_cents: number; // por competência: receita − despesas lançadas
+  received_cents: number; // recebido no período (pagamentos − estornos)
+  paid_cents: number; // despesas efetivamente pagas no período
+  cash_result_cents: number; // resultado de caixa: recebido − pago
   cash_in_cents: number;
   cash_out_cents: number;
   receivable_cents: number;
+  receivable_overdue_cents: number;
   payable_cents: number;
   overdue_payable_cents: number;
   appointments_completed: number;
@@ -48,7 +52,7 @@ export interface FinancialEntry {
   amount_cents: number;
   competence_date: string;
   due_on: string | null;
-  status: "recognized" | "pending" | "paid" | "cancelled";
+  status: "recognized" | "pending" | "paid" | "received" | "cancelled";
   paid_at: string | null;
   payment_method: PaymentMethodCode | null;
   appointment_id: string | null;
@@ -68,6 +72,30 @@ export interface PayableRow {
   competence_date: string;
   category_name: string;
   overdue: boolean;
+}
+
+export interface ManualReceivableRow {
+  id: string;
+  description: string;
+  amount_cents: number;
+  due_on: string | null;
+  competence_date: string;
+  category_name: string;
+  overdue: boolean;
+}
+
+export interface CategoryReportRow {
+  category_id: string;
+  category_name: string;
+  entries: number;
+  total_cents: number;
+}
+
+export interface EntryFilters {
+  category?: string; // id
+  status?: string;
+  method?: PaymentMethodCode;
+  staff?: string; // id (só receitas)
 }
 
 export interface ReceivableRow {

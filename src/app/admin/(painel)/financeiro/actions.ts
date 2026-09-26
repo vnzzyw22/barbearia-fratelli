@@ -312,6 +312,93 @@ export async function setRecurringActive(id: string, active: boolean): Promise<R
   return { ok: true };
 }
 
+// ── Receitas manuais (venda de produto, outras receitas) ────────────────────
+// Receita de atendimento nasce sozinha ao concluir. Esta é para o que NÃO vem da agenda.
+// A chave de idempotência vem do formulário: duplo clique/reenvio devolve a mesma receita.
+
+export interface ManualIncomeInput {
+  description: string;
+  categoryId: string;
+  amountCents: number;
+  competenceDate: string;
+  dueOn: string | null;
+  notes: string;
+  receivedMethod: string | null; // se informado, já nasce recebida
+  idempotencyKey: string;
+}
+
+export async function createManualIncome(input: ManualIncomeInput): Promise<Result> {
+  if (!input.description.trim()) return { ok: false, error: "Informe a descrição." };
+  if (!input.categoryId) return { ok: false, error: "Escolha a categoria." };
+  if (!isCents(input.amountCents)) return { ok: false, error: "Informe um valor válido." };
+  if (!ISO_DATE.test(input.competenceDate) || (input.dueOn && !ISO_DATE.test(input.dueOn))) {
+    return { ok: false, error: "Data inválida." };
+  }
+  if (input.receivedMethod && !isMethod(input.receivedMethod)) return { ok: false, error: "Forma de pagamento inválida." };
+  if (input.idempotencyKey.length < 8) return { ok: false, error: "Requisição inválida. Recarregue a página." };
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("create_manual_income", {
+    p_category_id: input.categoryId,
+    p_description: input.description.trim(),
+    p_amount_cents: input.amountCents,
+    p_competence: input.competenceDate,
+    p_due_on: input.dueOn || null,
+    p_notes: input.notes.trim() || null,
+    p_method: input.receivedMethod || null,
+    p_idempotency_key: input.idempotencyKey,
+  });
+  if (error) return fail(error, "create_manual_income");
+  refresh();
+  return { ok: true };
+}
+
+export async function receiveIncome(entryId: string, method: string): Promise<Result> {
+  if (!isMethod(method)) return { ok: false, error: "Escolha a forma de pagamento." };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("receive_income", { p_entry_id: entryId, p_method: method });
+  if (error) return fail(error, "receive_income");
+  refresh();
+  return { ok: true };
+}
+
+// Estorno de receita manual recebida: acha o pagamento da receita e usa o mesmo estorno da agenda
+// (sai do caixa e a receita é cancelada). Um estorno por pagamento: repetir não duplica.
+export async function refundManualIncome(entryId: string, reason: string): Promise<Result> {
+  if (!reason.trim()) return { ok: false, error: "Informe o motivo do estorno." };
+  const supabase = await createClient();
+  const { data: payment, error: findError } = await supabase
+    .from("payments")
+    .select("id")
+    .eq("income_entry_id", entryId)
+    .eq("kind", "payment")
+    .maybeSingle();
+  if (findError) return fail(findError, "find_income_payment");
+  if (!payment) return { ok: false, error: "Recebimento não encontrado para esta receita." };
+  const { error } = await supabase.rpc("refund_payment", { p_payment_id: payment.id, p_reason: reason.trim() });
+  if (error) {
+    if (error.code === "23505") return { ok: false, error: "Esta receita já foi estornada." };
+    return fail(error, "refund_manual_income");
+  }
+  refresh();
+  return { ok: true };
+}
+
+export async function cancelManualIncome(entryId: string): Promise<Result> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("financial_entries")
+    .update({ status: "cancelled" })
+    .eq("id", entryId)
+    .eq("kind", "income")
+    .eq("status", "pending")
+    .select("id");
+  if (error) return fail(error, "cancel_manual_income");
+  if (!data || data.length === 0) return { ok: false, error: "Só receitas pendentes podem ser canceladas." };
+  refresh();
+  return { ok: true };
+}
+
 // ── Cadastros (categorias e formas de pagamento) ────────────────────────────
 
 export async function createCategory(kind: "income" | "expense", name: string, isFixed: boolean): Promise<Result> {

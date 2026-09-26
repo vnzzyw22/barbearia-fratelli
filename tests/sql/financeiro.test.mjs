@@ -491,6 +491,8 @@ test("limpeza de teste: remove só o rastro dos testes e preserva dados reais", 
   await own(w, () => w.db.query("select public.pay_expense($1,'cash')", [ex]));
   await own(w, () => w.db.query("select public.close_cash_register(0)"));
 
+  // a limpeza conhece a receita manual (etapa 2), então roda depois dessa migração
+  await applyMigration(w.db, "20260926120000_receita_manual_e_resultado_de_caixa.sql");
   await w.db.exec(readFileSync(new URL("../../supabase/manutencao/limpar-dados-de-teste.sql", import.meta.url), "utf8"));
 
   assert.equal(await count(w, "appointments", "notes like 'TESTE AUTOMATICO%'"), 0);

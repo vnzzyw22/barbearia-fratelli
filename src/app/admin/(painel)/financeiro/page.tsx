@@ -9,14 +9,17 @@ import { Empty } from "@/components/admin/finance/ui";
 import { pageSubtitleClass, pageTitleClass } from "@/components/admin/theme";
 import { todayISO } from "@/lib/date";
 import { resolvePeriod } from "@/lib/finance/period";
+import type { EntryFilters, PaymentMethodCode } from "@/lib/supabase/finance-types";
 import {
   generateRecurringExpenses,
   getCashFlow,
   getCashMovements,
   getCategories,
+  getCategoryReport,
   getClientReport,
   getEntries,
   getFinanceSummary,
+  getManualReceivables,
   getMethodReport,
   getOpenCashRegister,
   getPaymentMethods,
@@ -25,11 +28,30 @@ import {
   getRecurringExpenses,
   getRegisterMovements,
   getServiceReport,
+  getStaffOptions,
   getStaffReport,
   isOwner,
 } from "@/lib/supabase/finance-queries";
 
 const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
+
+const METHOD_CODES: PaymentMethodCode[] = ["pix", "cash", "debit", "credit", "other"];
+const ENTRY_STATUS = {
+  income: ["recognized", "pending", "received", "cancelled"],
+  expense: ["pending", "paid", "cancelled"],
+} as const;
+
+// Só valores conhecidos passam; o resto é ignorado (e o banco ainda valida o formato dos ids).
+function readFilters(sp: Record<string, string | string[] | undefined>, kind: "income" | "expense"): EntryFilters {
+  const status = first(sp.st);
+  const method = first(sp.mt);
+  return {
+    category: first(sp.cat) || undefined,
+    status: status && (ENTRY_STATUS[kind] as readonly string[]).includes(status) ? status : undefined,
+    method: method && METHOD_CODES.includes(method as PaymentMethodCode) ? (method as PaymentMethodCode) : undefined,
+    staff: kind === "income" ? first(sp.pf) || undefined : undefined,
+  };
+}
 
 export default async function FinanceiroPage(props: PageProps<"/admin/financeiro">) {
   const sp = await props.searchParams;
@@ -66,19 +88,38 @@ export default async function FinanceiroPage(props: PageProps<"/admin/financeiro
     ]);
     content = <OverviewTab summary={summary} cashFlow={cashFlow} methods={methods} />;
   } else if (tab === "receitas") {
-    const [entries, receivables] = await Promise.all([
-      getEntries("income", period.from, period.to),
+    const filters = readFilters(sp, "income");
+    const [entries, receivables, manualReceivables, categories, methods, staff] = await Promise.all([
+      getEntries("income", period.from, period.to, filters),
       getReceivables(),
+      getManualReceivables(),
+      getCategories(),
+      getPaymentMethods(),
+      getStaffOptions(),
     ]);
-    content = <IncomeTab entries={entries} receivables={receivables} />;
+    content = (
+      <IncomeTab
+        entries={entries}
+        receivables={receivables}
+        manualReceivables={manualReceivables}
+        categories={categories}
+        methods={methods}
+        staff={staff}
+        period={period}
+        filters={filters}
+      />
+    );
   } else if (tab === "despesas") {
+    const filters = readFilters(sp, "expense");
     const [entries, categories, methods, recurring] = await Promise.all([
-      getEntries("expense", period.from, period.to),
+      getEntries("expense", period.from, period.to, filters),
       getCategories(),
       getPaymentMethods(),
       getRecurringExpenses(),
     ]);
-    content = <ExpensesTab entries={entries} categories={categories} methods={methods} recurring={recurring} />;
+    content = (
+      <ExpensesTab entries={entries} categories={categories} methods={methods} recurring={recurring} period={period} filters={filters} />
+    );
   } else if (tab === "caixa") {
     const [open, registers, movements] = await Promise.all([
       getOpenCashRegister(),
@@ -98,13 +139,24 @@ export default async function FinanceiroPage(props: PageProps<"/admin/financeiro
       />
     );
   } else if (tab === "relatorios") {
-    const [services, staff, methods, clients] = await Promise.all([
+    const [services, staff, methods, clients, incomeCategories, expenseCategories] = await Promise.all([
       getServiceReport(period.from, period.to),
       getStaffReport(period.from, period.to),
       getMethodReport(period.from, period.to),
       getClientReport(period.from, period.to),
+      getCategoryReport(period.from, period.to, "income"),
+      getCategoryReport(period.from, period.to, "expense"),
     ]);
-    content = <ReportsTab services={services} staff={staff} methods={methods} clients={clients} />;
+    content = (
+      <ReportsTab
+        services={services}
+        staff={staff}
+        methods={methods}
+        clients={clients}
+        incomeCategories={incomeCategories}
+        expenseCategories={expenseCategories}
+      />
+    );
   } else {
     const [categories, methods] = await Promise.all([getCategories(), getPaymentMethods()]);
     content = <SettingsTab categories={categories} methods={methods} />;
@@ -116,7 +168,7 @@ export default async function FinanceiroPage(props: PageProps<"/admin/financeiro
     <div>
       <h1 className={pageTitleClass}>Financeiro</h1>
       <p className={pageSubtitleClass}>
-        Receita não é lucro: aqui você vê o que foi faturado, o que sobrou e o que realmente entrou no caixa.
+        Receita não é lucro: aqui você vê o que foi faturado, o que realmente entrou e saiu do caixa e o que sobrou.
         {usesPeriod && <> Período: <strong className="text-white/80">{period.label}</strong> ({periodCaption(period.from, period.to)}).</>}
       </p>
       <FinanceNav tab={tab} period={period} />

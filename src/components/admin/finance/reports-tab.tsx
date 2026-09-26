@@ -2,6 +2,7 @@ import { formatCents } from "@/lib/finance/money";
 import { formatDayBR } from "@/lib/finance/period";
 import {
   METHOD_LABEL,
+  type CategoryReportRow,
   type ClientReportRow,
   type MethodReportRow,
   type ServiceReportRow,
@@ -19,16 +20,52 @@ function HBar({ value, max }: { value: number; max: number }) {
   );
 }
 
+function CategoryTable({ rows, empty }: { rows: CategoryReportRow[]; empty: string }) {
+  if (rows.length === 0) return <Empty>{empty}</Empty>;
+  const max = Math.max(...rows.map((r) => r.total_cents));
+  const sum = rows.reduce((s, r) => s + r.total_cents, 0);
+  return (
+    <div className={tableWrapClass}>
+      <table className={tableClass}>
+        <thead>
+          <tr>
+            <th className={thClass}>Categoria</th>
+            <th className={thNumClass}>Lançamentos</th>
+            <th className={thNumClass}>Total</th>
+            <th className={thNumClass}>Parte</th>
+            <th className={`${thClass} w-40`} />
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr key={r.category_id}>
+              <td className={tdClass}>{r.category_name}</td>
+              <td className={tdNumClass}>{r.entries}</td>
+              <td className={tdNumClass}>{formatCents(r.total_cents)}</td>
+              <td className={tdNumClass}>{sum > 0 ? `${Math.round((r.total_cents / sum) * 100)}%` : "—"}</td>
+              <td className={tdClass}><HBar value={r.total_cents} max={max} /></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export function ReportsTab({
   services,
   staff,
   methods,
   clients,
+  incomeCategories,
+  expenseCategories,
 }: {
   services: ServiceReportRow[];
   staff: StaffReportRow[];
   methods: MethodReportRow[];
   clients: ClientReportRow[];
+  incomeCategories: CategoryReportRow[];
+  expenseCategories: CategoryReportRow[];
 }) {
   const maxService = Math.max(0, ...services.map((s) => s.revenue_cents));
   const maxStaff = Math.max(0, ...staff.map((s) => s.revenue_cents));
@@ -36,6 +73,14 @@ export function ReportsTab({
 
   return (
     <div className="flex flex-col gap-8">
+      <Block title="Receitas por categoria" question="De que tipo de receita vem o dinheiro? (por data do atendimento ou da venda, sem canceladas)">
+        <CategoryTable rows={incomeCategories} empty="Sem receitas neste período." />
+      </Block>
+
+      <Block title="Despesas por categoria" question="Onde o dinheiro está indo? (por data do gasto, pagas e pendentes, sem canceladas)">
+        <CategoryTable rows={expenseCategories} empty="Sem despesas neste período." />
+      </Block>
+
       <Block title="Serviços" question="Quais serviços mais vendem e quanto cada um rende?">
         {services.length === 0 ? (
           <Empty>Sem atendimentos concluídos neste período.</Empty>

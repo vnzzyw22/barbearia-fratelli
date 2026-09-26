@@ -1,8 +1,9 @@
 -- LIMPEZA DOS DADOS DE TESTE (financeiro + agendamentos de teste).
+-- Requer a migração 20260926120000 (receita manual) já aplicada: usa payments.income_entry_id.
 -- Remove SOMENTE o que os testes automáticos criaram:
 --   * clientes / agendamentos com nome ou observação começando em "TESTE AUTOMATICO";
 --   * tudo que aponta para esses agendamentos (itens, pagamentos, receitas, comissões);
---   * despesas com descrição "TESTE AUTOMATICO%" e movimentos manuais de caixa "TESTE%";
+--   * despesas e receitas manuais com descrição "TESTE AUTOMATICO%" (e o recebimento delas) e movimentos manuais de caixa "TESTE%";
 --   * caixas que ficarem sem nenhum movimento;
 --   * o rastro na auditoria dessas linhas.
 -- O histórico financeiro é protegido por gatilhos (por design), então este script desliga os
@@ -27,12 +28,16 @@ create temp table t_appts on commit drop as
 create temp table t_items on commit drop as
   select id from public.appointment_items where appointment_id in (select id from t_appts);
 
-create temp table t_payments on commit drop as
-  select id from public.payments where appointment_id in (select id from t_appts);
-
 create temp table t_entries on commit drop as
   select id from public.financial_entries
    where appointment_id in (select id from t_appts) or description like 'TESTE AUTOMATICO%';
+
+-- inclui o recebimento das receitas manuais de teste (pagamento sem atendimento, ligado à receita)
+create temp table t_payments on commit drop as
+  select id from public.payments
+   where appointment_id in (select id from t_appts) or income_entry_id in (select id from t_entries)
+      or reversal_of in (select id from public.payments
+                          where appointment_id in (select id from t_appts) or income_entry_id in (select id from t_entries));
 
 create temp table t_moves on commit drop as
   select id from public.cash_movements
@@ -84,7 +89,7 @@ $limpeza$;
 select
   (select count(*) from public.appointments where notes like 'TESTE AUTOMATICO%')          as agendamentos_teste,
   (select count(*) from public.clients where name like 'TESTE AUTOMATICO%')                 as clientes_teste,
-  (select count(*) from public.financial_entries where description like 'TESTE AUTOMATICO%') as despesas_teste,
+  (select count(*) from public.financial_entries where description like 'TESTE AUTOMATICO%') as lancamentos_teste,
   (select count(*) from public.payments)                                                    as pagamentos_restantes,
   (select count(*) from public.cash_movements)                                              as movimentos_restantes,
   (select count(*) from public.cash_registers)                                              as caixas_restantes;

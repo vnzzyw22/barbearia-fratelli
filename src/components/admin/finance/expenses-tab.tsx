@@ -1,7 +1,8 @@
 import { formatCents } from "@/lib/finance/money";
-import { formatDayBR } from "@/lib/finance/period";
+import { formatDayBR, type Period } from "@/lib/finance/period";
 import {
   METHOD_LABEL,
+  type EntryFilters,
   type FinancialCategory,
   type FinancialEntry,
   type PaymentMethod,
@@ -9,6 +10,7 @@ import {
 } from "@/lib/supabase/finance-types";
 import { badgeClass } from "@/components/admin/theme";
 import { todayISO } from "@/lib/date";
+import { EntryFilterBar } from "./entry-filters";
 import { ExpenseForm, ExpenseRowActions, RecurringManager } from "./expense-forms";
 import { Block, Empty, tableClass, tableWrapClass, tdClass, tdNumClass, thClass, thNumClass } from "./ui";
 
@@ -24,11 +26,15 @@ export function ExpensesTab({
   categories,
   methods,
   recurring,
+  period,
+  filters,
 }: {
   entries: FinancialEntry[];
   categories: FinancialCategory[];
   methods: PaymentMethod[];
   recurring: RecurringExpense[];
+  period: Period;
+  filters: EntryFilters;
 }) {
   const expenseCategories = categories.filter((c) => c.kind === "expense");
   const counted = entries.filter((e) => e.status !== "cancelled");
@@ -51,8 +57,13 @@ export function ExpensesTab({
           </span>
         }
       >
+        <EntryFilterBar tab="despesas" kind="expense" period={period} filters={filters} categories={categories} methods={methods} />
         {entries.length === 0 ? (
-          <Empty>Nenhuma despesa neste período.</Empty>
+          <Empty>
+            {filters.category || filters.status || filters.method
+              ? "Nenhuma despesa com esses filtros neste período."
+              : "Nenhuma despesa neste período."}
+          </Empty>
         ) : (
           <div className={tableWrapClass}>
             <table className={tableClass}>

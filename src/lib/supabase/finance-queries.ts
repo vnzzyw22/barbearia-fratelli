@@ -3,10 +3,13 @@ import type {
   CashFlow,
   CashMovement,
   CashRegister,
+  CategoryReportRow,
   ClientReportRow,
+  EntryFilters,
   FinanceSummary,
   FinancialCategory,
   FinancialEntry,
+  ManualReceivableRow,
   MethodReportRow,
   PayableRow,
   PaymentMethod,
@@ -56,28 +59,43 @@ export async function getClientReport(from: string, to: string) {
   return (await rpc<ClientReportRow[]>("report_by_client", { p_from: from, p_to: to })) ?? [];
 }
 
-const ENTRY_SELECT =
-  "id, kind, description, amount_cents, competence_date, due_on, status, paid_at, payment_method, appointment_id, commission_id, recurring_expense_id, notes, category:financial_categories(name), client:clients(name), staff:staff(name)";
+export async function getCategoryReport(from: string, to: string, kind: "income" | "expense") {
+  return (await rpc<CategoryReportRow[]>("report_by_category", { p_from: from, p_to: to, p_kind: kind })) ?? [];
+}
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Filtros são aplicados no BANCO (nada de buscar tudo e filtrar em JS). Valores fora do formato são ignorados.
 export async function getEntries(
   kind: "income" | "expense",
   from: string,
   to: string,
+  filters: EntryFilters = {},
 ): Promise<FinancialEntry[]> {
+  return (
+    (await rpc<FinancialEntry[]>("list_financial_entries", {
+      p_kind: kind,
+      p_from: from,
+      p_to: to,
+      p_category: filters.category && UUID.test(filters.category) ? filters.category : null,
+      p_status: filters.status ?? null,
+      p_method: filters.method ?? null,
+      p_staff: filters.staff && UUID.test(filters.staff) ? filters.staff : null,
+    })) ?? []
+  );
+}
+
+export async function getManualReceivables(): Promise<ManualReceivableRow[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("financial_entries")
-    .select(ENTRY_SELECT)
-    .eq("kind", kind)
-    .gte("competence_date", from)
-    .lte("competence_date", to)
-    .order("competence_date", { ascending: false })
-    .order("created_at", { ascending: false });
+    .from("v_accounts_receivable_manual")
+    .select("id, description, amount_cents, due_on, competence_date, category_name, overdue")
+    .order("due_on", { ascending: true, nullsFirst: false });
   if (error) {
-    console.error("Erro ao buscar lançamentos:", error.message);
+    console.error("Erro ao buscar receitas a receber:", error.message);
     return [];
   }
-  return data as unknown as FinancialEntry[];
+  return data as ManualReceivableRow[];
 }
 
 export async function getPayables(): Promise<PayableRow[]> {
@@ -215,4 +233,14 @@ export async function getRegisterMovements(registerId: string): Promise<CashMove
     return [];
   }
   return data as CashMovement[];
+}
+
+export async function getStaffOptions(): Promise<{ id: string; name: string }[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("staff").select("id, name").order("name");
+  if (error) {
+    console.error("Erro ao buscar profissionais:", error.message);
+    return [];
+  }
+  return data as { id: string; name: string }[];
 }

@@ -1,6 +1,6 @@
 import { todayISO } from "@/lib/date";
 
-export type PeriodKey = "hoje" | "7d" | "mes" | "anterior" | "custom";
+export type PeriodKey = "hoje" | "semana" | "7d" | "mes" | "anterior" | "custom";
 
 export interface Period {
   key: PeriodKey;
@@ -11,6 +11,7 @@ export interface Period {
 
 export const PERIOD_OPTIONS: { key: PeriodKey; label: string }[] = [
   { key: "hoje", label: "Hoje" },
+  { key: "semana", label: "Esta semana" },
   { key: "7d", label: "7 dias" },
   { key: "mes", label: "Este mês" },
   { key: "anterior", label: "Mês anterior" },
@@ -41,6 +42,12 @@ export function resolvePeriod(params: {
   const key = (PERIOD_OPTIONS.some((o) => o.key === params.p) ? params.p : "mes") as PeriodKey;
 
   if (key === "hoje") return { key, from: today, to: today, label: "Hoje" };
+  if (key === "semana") {
+    // segunda a domingo da semana corrente
+    const dow = new Date(`${today}T12:00:00Z`).getUTCDay(); // 0 = domingo
+    const monday = addDays(today, dow === 0 ? -6 : 1 - dow);
+    return { key, from: monday, to: addDays(monday, 6), label: "Esta semana" };
+  }
   if (key === "7d") return { key, from: addDays(today, -6), to: today, label: "Últimos 7 dias" };
   if (key === "anterior") {
     const py = m === 1 ? y - 1 : y;

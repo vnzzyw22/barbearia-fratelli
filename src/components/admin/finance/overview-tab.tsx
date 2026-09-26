@@ -47,18 +47,30 @@ export function OverviewTab({
   if (!summary || !cashFlow) {
     return <Empty>Não foi possível carregar o resumo agora. Recarregue a página; se persistir, avise o suporte.</Empty>;
   }
-  const resultTone = summary.result_cents < 0 ? "negative" : "positive";
+  const cashTone = summary.cash_result_cents < 0 ? "negative" : "positive";
+  const accrualTone = summary.result_cents < 0 ? "negative" : "positive";
 
   return (
     <div className="flex flex-col gap-8">
       <Block
         title="Resultado do período"
-        question="Quanto o negócio ganhou e gastou pelo que foi FEITO no período (competência)."
+        question="Quanto realmente entrou e saiu: recebido menos pago no período."
       >
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <Kpi label="Receita" value={formatCents(summary.revenue_cents)} tone="positive" hint="Serviços concluídos — não é lucro" />
-          <Kpi label="Despesas" value={formatCents(summary.expenses_cents)} tone="negative" hint="Inclui comissões e taxas" />
-          <Kpi label="Resultado" value={formatCents(summary.result_cents)} tone={resultTone} hint="Receita − despesas" />
+          <Kpi label="Recebido" value={formatCents(summary.received_cents)} tone="positive" hint="Pagamentos recebidos, já com estornos descontados" />
+          <Kpi label="Pago" value={formatCents(summary.paid_cents)} tone="negative" hint="Despesas efetivamente pagas (inclui taxas e comissões)" />
+          <Kpi label="Resultado de caixa" value={formatCents(summary.cash_result_cents)} tone={cashTone} hint="Recebido − pago" />
+        </div>
+      </Block>
+
+      <Block
+        title="Competência"
+        question="O que foi feito e gasto no período, mesmo que ainda não tenha sido recebido ou pago. Receita não é lucro."
+      >
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <Kpi label="Receita" value={formatCents(summary.revenue_cents)} hint="Serviços e vendas do período" />
+          <Kpi label="Despesas" value={formatCents(summary.expenses_cents)} hint="Lançadas no período, inclui pendentes" />
+          <Kpi label="Resultado por competência" value={formatCents(summary.result_cents)} tone={accrualTone} hint="Receita − despesas lançadas" />
         </div>
       </Block>
 
@@ -80,7 +92,7 @@ export function OverviewTab({
 
       <Block title="Pendências" question="O que ainda vai entrar e o que ainda precisa ser pago.">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <Kpi label="A receber" value={formatCents(summary.receivable_cents)} tone={summary.receivable_cents > 0 ? "warning" : "neutral"} hint="Atendimentos concluídos com saldo em aberto" />
+          <Kpi label="A receber" value={formatCents(summary.receivable_cents)} tone={summary.receivable_cents > 0 ? "warning" : "neutral"} hint={summary.receivable_overdue_cents > 0 ? `${formatCents(summary.receivable_overdue_cents)} vencido` : "Atendimentos em aberto e receitas lançadas"} />
           <Kpi label="A pagar" value={formatCents(summary.payable_cents)} tone={summary.payable_cents > 0 ? "warning" : "neutral"} hint={summary.overdue_payable_cents > 0 ? `${formatCents(summary.overdue_payable_cents)} vencido` : "Nada vencido"} />
           <Kpi
             label="Atendimentos"

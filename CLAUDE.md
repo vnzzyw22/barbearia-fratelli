@@ -120,3 +120,16 @@ Limpeza de dados de teste: `supabase/manutencao/limpar-dados-de-teste.sql`.
   `Get-Content -Raw -Encoding UTF8 arq | Set-Clipboard` ou SQL só ASCII (`chr()`), e terminar o SQL com um SELECT que mostre o resultado.
 - Pagamento/movimento de caixa são datados pelo momento real (não pela data do atendimento); receita pela data do atendimento.
 - Pendências: UI de comissões (Fase 6), perfil `barber`, trocar a senha do admin de teste (123456), recuperar logo/fotos.
+
+## Financeiro, etapa 2 (2026-09-26) — receita manual e resultado de caixa
+
+Migração `20260926120000_receita_manual_e_resultado_de_caixa.sql` (rollback em `supabase/rollback/…_DOWN.sql`, recusa se houver
+receita manual). **Só vale depois de aplicada no Supabase** (SQL Editor, sem acento via `clip`); o painel novo chama funções que ela cria.
+- Receita manual (venda de produto/outras): `create_manual_income` (nasce `pending`, ou já `received` se vier a forma) e `receive_income`
+  (gera pagamento + caixa via `fin_insert_payment`, 1 vez: `already_received` + chave `income:<id>`). Duplo clique = mesma `idempotency_key`.
+  Estorno (`refund_payment`) de receita manual a **cancela**; estorno de atendimento continua não cancelando a receita.
+- Resultado: **de caixa** (`received_cents − paid_cents`) é o principal; **por competência** (`result_cents`) fica ao lado, sempre rotulado.
+- Filtros (categoria, situação, forma, profissional) rodam no banco em `list_financial_entries`; `report_by_category` para receitas/despesas.
+- Migração aplicada no Supabase em 2026-09-26. Estorno de receita manual: botão "Estornar" na aba Receitas (`refundManualIncome`).
+- Pendente: tabelas do financeiro no celular rolam para o lado (ideal: cartões); UI de comissões; perfil `barber`.
+- `supabase/manutencao/limpar-dados-de-teste.sql` agora cobre receita manual (requer a migração da etapa 2).
