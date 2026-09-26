@@ -1,7 +1,8 @@
 import { Emblem } from "@/components/site/brand";
 import { redirect } from "next/navigation";
 import { AdminNav } from "@/components/admin/admin-nav";
-import { createClient } from "@/lib/supabase/server";
+import { NoAccess } from "@/components/account/no-access";
+import { getAccess } from "@/lib/auth/access";
 import { logout } from "./actions";
 
 export default async function PainelLayout({
@@ -9,15 +10,18 @@ export default async function PainelLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const access = await getAccess();
 
-  // O middleware já bloqueia rotas /admin sem sessão; esta checagem aqui é
-  // uma segunda camada de defesa direto no layout do painel.
-  if (!user) {
+  // O middleware já bloqueia rotas /admin sem sessão; esta checagem é a segunda camada.
+  if (!access) {
     redirect("/admin/login");
+  }
+  // Barbeiro não usa o painel do dono: vai para a área dele. (As policies do banco barram mesmo assim.)
+  if (access.role === "barber") {
+    redirect("/barbeiro");
+  }
+  if (access.role !== "owner") {
+    return <NoAccess />;
   }
 
   return (

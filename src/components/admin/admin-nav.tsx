@@ -11,7 +11,9 @@ const NAV_ITEMS = [
   { href: "/admin/servicos", label: "Serviços" },
   { href: "/admin/galeria", label: "Galeria" },
   { href: "/admin/financeiro", label: "Financeiro" },
+  { href: "/admin/comissoes", label: "Comissões" },
   { href: "/admin/configuracoes", label: "Configurações" },
+  { href: "/admin/conta", label: "Minha conta" },
 ];
 
 // Extraído do layout (2026-09-03) só pra poder marcar o item ativo via

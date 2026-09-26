@@ -40,7 +40,7 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-  const isAdminRoute = pathname.startsWith("/admin");
+  const isAdminRoute = pathname.startsWith("/admin") || pathname.startsWith("/barbeiro");
   const isLoginRoute = pathname === "/admin/login";
 
   if (isAdminRoute && !isLoginRoute && !user) {

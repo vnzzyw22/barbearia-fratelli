@@ -133,3 +133,24 @@ receita manual). **Só vale depois de aplicada no Supabase** (SQL Editor, sem ac
 - Migração aplicada no Supabase em 2026-09-26. Estorno de receita manual: botão "Estornar" na aba Receitas (`refundManualIncome`).
 - Pendente: tabelas do financeiro no celular rolam para o lado (ideal: cartões); UI de comissões; perfil `barber`.
 - `supabase/manutencao/limpar-dados-de-teste.sql` agora cobre receita manual (requer a migração da etapa 2).
+
+## Papéis, barbeiro e comissões (2026-09-27)
+
+Migração `20260927120000_papeis_barbeiro_e_comissoes.sql` (rollback `…_DOWN.sql`: recusa se houver login de barbeiro, porque
+desfazer devolve as policies "qualquer autenticado = admin"). **Ordem de deploy: migração no Supabase primeiro, código depois.**
+- **Papéis** vêm de `admin_profiles.role` (`owner` = admin do painel; `barber` exige `staff_id`, um login por profissional).
+  Login = Supabase Auth (sem senha fixa no código). Cadastro público segue DESLIGADO.
+- **RLS:** as policies antigas (clientes, agendamentos, serviços, equipe, bloqueios, galeria, configurações, transações, storage)
+  eram "qualquer autenticado" e passaram a `is_owner()`. A migração tem uma trava: se sobrar policy antiga, desfaz tudo.
+  Policies de leitura pública (`services`, `staff`, `gallery`) e de agendamento também valem para `authenticated`, para o site
+  não quebrar com um barbeiro logado.
+- **Barbeiro** não tem SELECT em tabela alguma do painel: só as funções `barber_me/agenda/summary/commissions`, que descobrem o
+  profissional por `auth.uid()` (não recebem id de barbeiro). Do cliente ele vê só o primeiro nome. Rotas: `/barbeiro`, `/barbeiro/comissoes`, `/barbeiro/conta`.
+  O layout de `/admin` redireciona barbeiro para `/barbeiro`; sem perfil → tela "Sem acesso".
+- **Vínculo:** dono cria o usuário no Supabase (Authentication › Users) e vincula pelo e-mail em Equipe › Acesso ao painel (`link_barber`).
+- **Comissão:** já nascia em `complete_appointment` (1 por item, `unique appointment_item_id`, percentual congelado, despesa `pending`).
+  Sem regra cadastrada = sem comissão (nenhum % inventado). `pending` = calculada/a pagar; `paid` quando a despesa é paga (`pay_expense`).
+  Não há estado "aprovada" (não foi necessário). Estorno de pagamento NÃO cancela a comissão (igual à receita de atendimento).
+  Regras (`commission_rules`) em /admin/comissoes; só percentual por ora (valor fixo = coluna futura, sem mudar o resto).
+- **Troca de senha:** `/admin/conta` e `/barbeiro/conta` (confirma a senha atual; mínimo 10, sem previsíveis).
+- Pendente: criar service role no servidor para o dono criar logins de barbeiro sem ir ao Supabase (decisão de segurança).
