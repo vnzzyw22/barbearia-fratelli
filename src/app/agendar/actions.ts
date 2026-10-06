@@ -91,7 +91,7 @@ export async function createAppointment(
     return {
       ok: false,
       error:
-        "Agendamento ainda não disponível: o projeto Supabase da Fratelli ainda não foi configurado.",
+        "Agendamento ainda não disponível: o projeto Supabase da Blend ainda não foi configurado.",
     };
   }
 

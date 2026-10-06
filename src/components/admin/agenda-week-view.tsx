@@ -481,7 +481,7 @@ export function AgendaWeekView({
                 href={
                   getWhatsappLink(
                     selectedAppointment.client.whatsapp,
-                    `Olá, ${selectedAppointment.client.name}! Sobre seu horário de ${timeLabel(selectedAppointment.starts_at)} na Fratelli Barber Club.`,
+                    `Olá, ${selectedAppointment.client.name}! Sobre seu horário de ${timeLabel(selectedAppointment.starts_at)} na Blend Barber Club.`,
                   ) ?? undefined
                 }
                 target="_blank"

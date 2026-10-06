@@ -2,19 +2,19 @@ import type { BusinessSettings, GalleryPhoto, Service, Staff } from "./supabase/
 
 // Espelha supabase/seed.sql — usado só quando não há Supabase configurado
 // (ver src/lib/supabase/config.ts), pra pré-visualizar o site público antes
-// do projeto Supabase da Fratelli existir.
+// do projeto Supabase da Blend existir.
 //
 // ATENÇÃO: serviços/preços são EXEMPLOS genéricos e o horário de funcionamento
-// é o da base do projeto — nenhum foi confirmado pela Fratelli. Endereço,
+// é o da base do projeto — nenhum foi confirmado pela Blend. Endereço,
 // Instagram, WhatsApp (final 1432) e cidade foram confirmados/lidos da placa.
 // Equipe e galeria são placeholders explícitos. Manter em sincronia manual
 // com supabase/seed.sql.
 export const FALLBACK_BUSINESS: BusinessSettings = {
   id: "00000000-0000-0000-0000-000000000001",
-  name: "Fratelli Barber Club",
-  whatsapp: "5544999161432",
-  instagram: "fratellibarberclub",
-  address: "Av. das Grevíleas, 148 — Maringá, PR",
+  name: "Blend Barber Club",
+  whatsapp: "5544997412675",
+  instagram: null,
+  address: "Av. Kakogawa, 249 - Cidade Nova, Maringá - PR, 87023-123",
   business_hours: {
     mon: { open: "09:00", close: "19:30" },
     tue: { open: "09:00", close: "19:30" },
@@ -27,7 +27,7 @@ export const FALLBACK_BUSINESS: BusinessSettings = {
 };
 
 // SERVIÇOS E PREÇOS DE EXEMPLO (genéricos, autorizados pelo cliente enquanto a
-// tabela real não chega) — substituir pelos valores da Fratelli.
+// tabela real não chega) — substituir pelos valores da Blend.
 export const FALLBACK_SERVICES: Service[] = [
   { id: "fallback-1", name: "Corte", description: null, price: 50, duration_minutes: 40, image_url: null },
   { id: "fallback-2", name: "Barba", description: null, price: 40, duration_minutes: 30, image_url: null },
@@ -39,7 +39,7 @@ export const FALLBACK_SERVICES: Service[] = [
   { id: "fallback-8", name: "Coloração", description: "A partir de", price: 60, duration_minutes: 45, image_url: null },
 ];
 
-// PLACEHOLDER — substituir pelos barbeiros reais da Fratelli.
+// PLACEHOLDER — substituir pelos barbeiros reais da Blend.
 export const FALLBACK_STAFF: Staff[] = [
   { id: "fallback-staff-1", name: "Barbeiro 01", role: "Barbeiro", photo_url: null, instagram: null },
   { id: "fallback-staff-2", name: "Barbeiro 02", role: "Barbeiro", photo_url: null, instagram: null },

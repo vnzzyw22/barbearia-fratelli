@@ -1,8 +1,8 @@
+import Image from "next/image";
 import Link from "next/link";
 import { formatBusinessHours } from "@/lib/business-hours";
 import { EXTRA_PHONES, formatBrPhone, mapsLink } from "@/lib/brand-contacts";
 import { getWhatsappLink } from "@/lib/whatsapp";
-import { RazorGlyph } from "./brand";
 import type { BusinessSettings } from "@/lib/supabase/types";
 
 interface LocalSectionProps {
@@ -10,10 +10,9 @@ interface LocalSectionProps {
 }
 
 // "Local": endereço, telefones, Instagram e horários reais, vindos do banco.
-// A foto da fachada era da Fratelli (placa azul/dourada com o leão) — não pode
-// ser reaproveitada como se fosse a fachada da Blend, então aqui é placeholder
-// explícito até chegar uma foto real da fachada da Blend. Sem mapa embutido:
-// link "Ver no mapa" (sem iframe, mais leve).
+// Foto real da fachada da Blend (enviada pelo cliente em 2026-10-06; marca
+// d'água do Gemini removida). Sem mapa embutido: link "Ver no mapa" (sem
+// iframe, mais leve).
 export function ContactSection({ business }: LocalSectionProps) {
   const whatsappLink = business
     ? getWhatsappLink(business.whatsapp, "Olá! Vim pelo site da Blend Barber Club e tenho uma dúvida.")
@@ -25,17 +24,14 @@ export function ContactSection({ business }: LocalSectionProps) {
     <section id="local" className="on-paper bg-paper text-ink">
       <div className="mx-auto grid max-w-[1440px] gap-10 px-5 py-16 md:px-12 lg:grid-cols-12 lg:gap-16 lg:py-28">
         <figure className="lg:col-span-7">
-          <div
-            role="img"
-            aria-label="Espaço reservado para foto: fachada da Blend"
-            className="relative aspect-[4/3] w-full overflow-hidden bg-ink"
-          >
-            <RazorGlyph crossed className="absolute inset-[30%] h-auto w-auto text-royal/20" />
-            <span aria-hidden="true" className="absolute inset-3 border border-white/15" />
-            <p className="meta absolute bottom-5 left-5 text-white">
-              <span className="block font-heading text-2xl leading-none">A fachada</span>
-              <span className="text-fog italic">foto real a enviar</span>
-            </p>
+          <div className="relative aspect-[4/3] w-full overflow-hidden bg-ink">
+            <Image
+              src="/brand/foto-faxada.jpg"
+              alt="Fachada da Blend Barber Club: placa azul royal com o poste de barbeiro e as navalhas, portas de vidro abertas e barbeiro atendendo lá dentro"
+              fill
+              sizes="(min-width: 1024px) 58vw, 100vw"
+              className="object-cover object-[50%_30%]"
+            />
           </div>
           <figcaption className="meta mt-3 text-ink/55">Fachada da Blend Barber Club.</figcaption>
         </figure>

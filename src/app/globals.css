@@ -184,7 +184,7 @@ select option {
   place-items: center;
   border-radius: 9999px;
   border: 1px solid currentColor;
-  box-shadow: 0 0 0 4px var(--medallion-gap, var(--teal)), 0 0 0 5px currentColor;
+  box-shadow: 0 0 0 4px var(--medallion-gap, var(--paper)), 0 0 0 5px currentColor;
 }
 
 @keyframes ring-drift {

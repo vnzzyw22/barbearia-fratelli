@@ -9,26 +9,27 @@ web
 ## Users
 
 Primário: clientes que visitam o site para conhecer serviços e agendar com o
-barbeiro de preferência. Secundário: a equipe da Fratelli Barber Club usando
+barbeiro de preferência. Secundário: a equipe da Blend Barber Club usando
 o painel `/admin` (agenda, equipe, clientes, serviços, galeria, financeiro).
 
 ## Product Purpose
 
-Site institucional + agendamento online + painel para a Fratelli Barber Club.
+Site institucional + agendamento online + painel para a Blend Barber Club.
 O cliente escolhe serviço, profissional, dia e horário livre; o pedido fica
 pendente até a confirmação da casa (WhatsApp entra depois). Sucesso =
 agendamentos reais sem conflito de horário.
 
 ## Positioning
 
-Barber club italiano com herança editorial (teal + dourado envelhecido +
-marfim). Rebranding de um template já usado em outros deployments; identidade
-própria documentada em DESIGN.md.
+Modern-retro barbershop: azul royal + branco + preto, poste de barbeiro e
+navalhas como grafismo. Rebranding de um template já usado em outros
+deployments; identidade própria documentada em DESIGN.md.
 
 ## Brand Commitments
 
-Nome: Fratelli Barber Club. Logo oficial: leão em anel dourado + wordmark
-FRATELLI + "BARBER CLUB" (teal `#125660`, dourado `#D0A066`). Nenhum dado de
+Nome: Blend Barber Club. Logo real (foto da fachada): poste de barbeiro +
+navalhas + wordmark BLEND (D final espelhado) + "BARBER CLUB" (azul royal
+`#1A3AE0`, branco). Nenhum dado de
 história, endereço, contato ou equipe foi inventado — o que falta é
 placeholder explícito (ver CLAUDE.md > Pendências).
 

@@ -28,9 +28,9 @@ export function buildBookingMessage({
   // Canal de confirmação, não de agendamento (ver ANEXO seção 6) — esta
   // mensagem só é oferecida DEPOIS que `createAppointment` já gravou o
   // agendamento como "pending" no banco (ver booking-form.tsx). Tom de voz
-  // ainda placeholder — ajustar quando a Fratelli definir o tom real.
+  // ainda placeholder — ajustar quando a Blend definir o tom real.
   const lines = [
-    "✂️ *Fratelli Barber Club | Solicitação de Agendamento*",
+    "✂️ *Blend Barber Club | Solicitação de Agendamento*",
     "",
     `Olá! Meu nome é ${clientName} e acabei de solicitar um agendamento pelo site. Seguem os detalhes:`,
     "",

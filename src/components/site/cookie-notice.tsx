@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const KEY = "fratelli-cookie-notice";
+const KEY = "blend-cookie-notice";
 
 // Aviso informativo (não é um pedido de consentimento: o site só usa cookies
 // estritamente necessários — ver /politica-de-cookies). Guarda a escolha em

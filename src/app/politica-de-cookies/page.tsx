@@ -4,7 +4,7 @@ import { LegalLayout, LegalSection } from "@/components/site/legal-layout";
 
 export const metadata: Metadata = {
   title: "Política de Cookies",
-  description: "Quais cookies e armazenamento local o site da Fratelli Barber Club usa.",
+  description: "Quais cookies e armazenamento local o site da Blend Barber Club usa.",
 };
 
 // Descreve o que o código realmente faz: o site público não define cookies para
@@ -53,7 +53,7 @@ export default function PoliticaDeCookiesPage() {
       <LegalSection title="Dúvidas">
         <p>
           Veja também a <Link href="/politica-de-privacidade">Política de Privacidade</Link> ou fale com a gente pelo
-          WhatsApp <a href="https://wa.me/5544999161432">(44) 99916-1432</a>.
+          WhatsApp <a href="https://wa.me/5544997412675">(44) 99741-2675</a>.
         </p>
       </LegalSection>
     </LegalLayout>

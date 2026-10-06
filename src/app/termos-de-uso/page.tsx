@@ -4,7 +4,7 @@ import { LegalLayout, LegalSection } from "@/components/site/legal-layout";
 
 export const metadata: Metadata = {
   title: "Termos de Uso",
-  description: "Condições de uso do site e do agendamento online da Fratelli Barber Club.",
+  description: "Condições de uso do site e do agendamento online da Blend Barber Club.",
 };
 
 // MODELO BÁSICO — recomenda-se revisão jurídica. Reflete as regras reais do sistema:
@@ -14,7 +14,7 @@ export default function TermosDeUsoPage() {
     <LegalLayout title="Termos de Uso" updated="23 de setembro de 2026">
       <LegalSection title="1. Aceitação">
         <p>
-          Ao usar o site da Fratelli Barber Club e o agendamento online, você concorda com estes termos e com a{" "}
+          Ao usar o site da Blend Barber Club e o agendamento online, você concorda com estes termos e com a{" "}
           <Link href="/politica-de-privacidade">Política de Privacidade</Link>.
         </p>
       </LegalSection>
@@ -50,7 +50,7 @@ export default function TermosDeUsoPage() {
 
       <LegalSection title="5. Conteúdo do site">
         <p>
-          A marca, a logo, os textos e as imagens pertencem à Fratelli Barber Club ou são usados com autorização.
+          A marca, a logo, os textos e as imagens pertencem à Blend Barber Club ou são usados com autorização.
           Não é permitido copiar ou reutilizar sem permissão.
         </p>
       </LegalSection>
@@ -65,7 +65,7 @@ export default function TermosDeUsoPage() {
       <LegalSection title="7. Lei aplicável">
         <p>
           Estes termos seguem a legislação brasileira, inclusive o Código de Defesa do Consumidor. Dúvidas ou
-          reclamações: WhatsApp <a href="https://wa.me/5544999161432">(44) 99916-1432</a>.
+          reclamações: WhatsApp <a href="https://wa.me/5544997412675">(44) 99741-2675</a>.
         </p>
       </LegalSection>
     </LegalLayout>

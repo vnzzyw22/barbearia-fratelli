@@ -10,7 +10,7 @@ interface FaqEntry {
 
 // Respostas baseadas nas regras reais do sistema de agendamento (sem
 // cobrança antecipada, cancelamento só pela casa, confirmação pendente).
-// TODO(conteúdo): revisar com a Fratelli antes do lançamento.
+// TODO(conteúdo): revisar com a Blend antes do lançamento.
 const FAQS: FaqEntry[] = [
   {
     question: "Preciso agendar ou atendem sem hora marcada?",

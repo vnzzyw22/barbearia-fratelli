@@ -4,19 +4,19 @@ import { LegalLayout, LegalSection } from "@/components/site/legal-layout";
 
 export const metadata: Metadata = {
   title: "Política de Privacidade",
-  description: "Como a Fratelli Barber Club trata os dados pessoais de quem usa o site e o agendamento online.",
+  description: "Como a Blend Barber Club trata os dados pessoais de quem usa o site e o agendamento online.",
 };
 
 // MODELO BÁSICO baseado na LGPD (Lei 13.709/2018) e no que o site realmente faz.
 // Recomenda-se revisão jurídica antes do lançamento e incluir a razão social e o
-// CNPJ da Fratelli (ainda não informados) na seção 1.
+// CNPJ da Blend (ainda não informados) na seção 1.
 export default function PoliticaDePrivacidadePage() {
   return (
     <LegalLayout title="Política de Privacidade" updated="23 de setembro de 2026">
       <LegalSection title="1. Quem somos">
         <p>
-          A <strong>Fratelli Barber Club</strong> (“Fratelli”, “nós”) é uma barbearia localizada na Av. das
-          Grevíleas, 148 — Maringá, PR. Somos a responsável (controladora) pelos dados pessoais tratados neste site,
+          A <strong>Blend Barber Club</strong> (“Blend”, “nós”) é uma barbearia localizada na Av. Kakogawa, 249 —
+          Cidade Nova, Maringá, PR. Somos a responsável (controladora) pelos dados pessoais tratados neste site,
           nos termos da Lei Geral de Proteção de Dados (LGPD).
         </p>
       </LegalSection>
@@ -56,7 +56,7 @@ export default function PoliticaDePrivacidadePage() {
             <strong>Vercel</strong> (hospedagem do site) e <strong>Supabase</strong> (banco de dados onde os
             agendamentos ficam guardados).
           </li>
-          <li>Os profissionais e a equipe da Fratelli que atendem e administram a agenda.</li>
+          <li>Os profissionais e a equipe da Blend que atendem e administram a agenda.</li>
         </ul>
         <p>
           Se você clicar em links externos (WhatsApp, Instagram, Google Maps), esses serviços passam a tratar seus
@@ -82,7 +82,7 @@ export default function PoliticaDePrivacidadePage() {
         </ul>
         <p>
           Para exercer esses direitos, fale com a gente pelo WhatsApp{" "}
-          <a href="https://wa.me/5544999161432">(44) 99916-1432</a> ou presencialmente na barbearia. Você também pode
+          <a href="https://wa.me/5544997412675">(44) 99741-2675</a> ou presencialmente na barbearia. Você também pode
           reclamar à Autoridade Nacional de Proteção de Dados (ANPD).
         </p>
       </LegalSection>

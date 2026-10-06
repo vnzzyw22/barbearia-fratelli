@@ -1,93 +1,6 @@
-import Image from "next/image";
-
-// `Emblem`/`BrandLockup`/`LionMark`/`Rings`/`DiamondRule` abaixo são da
-// identidade ANTERIOR (Fratelli) — ficam só até as seções que ainda os usam
-// (serviços, equipe, clube, galeria, footer) serem reconstruídas na
-// identidade Blend. `BlendMark`/`RazorGlyph`, mais abaixo, são os novos.
-
-export function Emblem({
-  className,
-  priority,
-  alt = "",
-}: {
-  className?: string;
-  priority?: boolean;
-  alt?: string;
-}) {
-  return (
-    <Image
-      src="/brand/emblem.webp"
-      alt={alt}
-      width={512}
-      height={512}
-      priority={priority}
-      unoptimized
-      className={className}
-    />
-  );
-}
-
-/** Logotipo de texto ao lado do emblema: "FRATELLI" (Bodoni) + "Barber Club" (slab dourado). */
-export function BrandLockup({ size = "sm" }: { size?: "sm" | "lg" }) {
-  return (
-    <span className="flex flex-col leading-none">
-      <span
-        translate="no"
-        className={`font-brand tracking-[0.14em] text-ivory uppercase ${size === "lg" ? "text-[1.6rem]" : "text-[1.15rem]"}`}
-      >
-        Fratelli
-      </span>
-      <span className={`label mt-1 text-gold-soft ${size === "lg" ? "text-[0.7rem]" : "text-[0.6rem]"}`}>
-        Barber Club
-      </span>
-    </span>
-  );
-}
-
-/** Leão como marca d'água: o alfa do emblema vira máscara; a cor vem do bg-* do className. */
-export function LionMark({ className }: { className?: string }) {
-  return <div aria-hidden="true" className={`lion-mask pointer-events-none ${className ?? ""}`} />;
-}
-
-/** Arcos concêntricos — a moldura circular da logo repetida. */
-export function Rings({
-  className,
-  count = 5,
-  dashedIndex = 2,
-}: {
-  className?: string;
-  count?: number;
-  dashedIndex?: number;
-}) {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="-500 -500 1000 1000"
-      className={`pointer-events-none ${className ?? ""}`}
-      fill="none"
-      stroke="currentColor"
-    >
-      {Array.from({ length: count }, (_, i) => (
-        <circle
-          key={i}
-          r={190 + i * 70}
-          strokeWidth={i === 0 ? 1.4 : 1}
-          strokeDasharray={i === dashedIndex ? "2 9" : undefined}
-          opacity={1 - i * 0.16}
-        />
-      ))}
-    </svg>
-  );
-}
-
-/** Divisor da marca: linha — losango — linha. */
-export function DiamondRule({ className }: { className?: string }) {
-  return (
-    <div aria-hidden="true" className={`rule-diamond ${className ?? ""}`}>
-      <i />
-    </div>
-  );
-}
+// A identidade anterior (Fratelli: Emblem/BrandLockup/LionMark/Rings/
+// DiamondRule) foi removida daqui no rebrand de 2026-10-06 — nada no site
+// usa mais essas peças. Histórico em git caso precise recuperar algo.
 
 /**
  * Wordmark Blend: tipográfico, sem arquivo de logo (o cliente ainda não
@@ -139,62 +52,57 @@ export function RazorGlyph({ className, crossed = false }: { className?: string;
 }
 
 /**
- * Selo Blend: reconstrução do logo real enviado pelo cliente (2026-10-06) —
- * fundo azul royal, "BARBER CLUB" no topo, símbolo de duas navalhas/máquinas
- * espelhadas no centro, "BLEND" na base com o último "D" espelhado (detalhe
- * do logo original). Sem o arquivo original em alta — se o cliente mandar o
- * arquivo de verdade (não só colado no chat), trocar por ele aqui.
+ * Selo Blend: reconstrução do logo real da fachada (foto enviada pelo
+ * cliente, 2026-10-06) — fundo azul royal, "BARBER CLUB" arqueado no topo,
+ * poste de barbeiro ladeado por duas navalhas abertas espelhadas no centro,
+ * "BLEND" na base com o último "D" espelhado (o mesmo detalhe da placa real).
+ * Reconstruído à mão (sem o arquivo vetorial original) a partir da foto da
+ * fachada — se o cliente mandar o arquivo de verdade, trocar por ele aqui.
  */
 export function BlendBadge({ className }: { className?: string }) {
   return (
     <svg aria-hidden="true" viewBox="0 0 200 200" className={className}>
       <rect width="200" height="200" fill="var(--royal)" />
-      <text
-        x="100"
-        y="38"
-        textAnchor="middle"
-        fontFamily="var(--font-heading), sans-serif"
-        fontWeight={700}
-        fontSize="13"
-        letterSpacing="2.5"
-        fill="var(--white)"
-      >
-        BARBER CLUB
+
+      <path id="blend-badge-arc" d="M 22 88 A 78 78 0 0 1 178 88" fill="none" />
+      <text fontFamily="var(--font-heading), sans-serif" fontWeight={700} fontSize="21" letterSpacing="3" fill="var(--white)">
+        <textPath href="#blend-badge-arc" startOffset="50%" textAnchor="middle">
+          BARBER CLUB
+        </textPath>
       </text>
-      <g stroke="var(--white)" strokeWidth="3" strokeLinecap="round" fill="none">
-        <line x1="40" y1="100" x2="160" y2="100" />
-        <g transform="translate(84 62)">
-          <rect x="-10" y="0" width="20" height="58" rx="6" />
-          <line x1="-10" y1="20" x2="10" y2="20" />
-        </g>
-        <g transform="translate(116 62) scale(-1 1)">
-          <rect x="-10" y="0" width="20" height="58" rx="6" />
-          <line x1="-10" y1="20" x2="10" y2="20" />
-        </g>
-      </g>
-      <text
-        x="78"
-        y="168"
-        textAnchor="middle"
-        fontFamily="var(--font-display), sans-serif"
-        fontWeight={900}
-        fontSize="40"
+
+      {/* poste: boné arredondado, corpo com uma faixa diagonal, base alargada */}
+      <path d="M89 62 Q100 52 111 62 L111 67 L89 67 Z" fill="var(--white)" />
+      <rect x="90" y="66" width="20" height="36" rx="1.5" fill="var(--white)" />
+      <path d="M90 102 L110 66" stroke="var(--royal)" strokeWidth="4.5" strokeLinecap="round" />
+      <path d="M82 102 Q82 112 92 114 L108 114 Q118 112 118 102 Z" fill="var(--white)" />
+
+      {/* navalhas abertas, espelhadas */}
+      <path
+        d="M88 96 C78 86 65 72 57 58 C55 55 58 52 61 54 C72 64 82 80 92 94 C94 97 91 99 88 96 Z"
         fill="var(--white)"
-      >
+      />
+      <line x1="80" y1="88" x2="68" y2="106" stroke="var(--white)" strokeWidth="3.4" strokeLinecap="round" />
+      <g transform="translate(200 0) scale(-1 1)">
+        <path
+          d="M88 96 C78 86 65 72 57 58 C55 55 58 52 61 54 C72 64 82 80 92 94 C94 97 91 99 88 96 Z"
+          fill="var(--white)"
+        />
+        <line x1="80" y1="88" x2="68" y2="106" stroke="var(--white)" strokeWidth="3.4" strokeLinecap="round" />
+      </g>
+
+      <line x1="30" y1="123" x2="170" y2="123" stroke="var(--white)" strokeWidth="2.4" />
+
+      <text x="40" y="170" fontFamily="var(--font-display), sans-serif" fontWeight={900} fontSize="46" fill="var(--white)">
         BLEN
       </text>
-      <text
-        x="152"
-        y="168"
-        textAnchor="middle"
-        fontFamily="var(--font-display), sans-serif"
-        fontWeight={900}
-        fontSize="40"
-        fill="var(--white)"
-        transform="scale(-1 1) translate(-304 0)"
-      >
-        D
-      </text>
+      <g transform="translate(292 0) scale(-1 1)">
+        <text x="146" y="170" fontFamily="var(--font-display), sans-serif" fontWeight={900} fontSize="46" fill="var(--white)">
+          D
+        </text>
+      </g>
+
+      <line x1="30" y1="184" x2="170" y2="184" stroke="var(--white)" strokeWidth="2.4" />
     </svg>
   );
 }
