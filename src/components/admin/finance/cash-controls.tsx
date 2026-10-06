@@ -29,7 +29,7 @@ export function OpenCashForm() {
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-wrap items-end gap-3 border border-white/10 bg-teal-deep p-4">
+    <form onSubmit={submit} className="flex flex-wrap items-end gap-3 border border-white/10 bg-steel p-4">
       <label className="flex flex-col gap-1.5">
 <span className={labelClass}>Dinheiro na gaveta (troco inicial)</span>
         <input inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} className={`${fieldClass} w-40 text-right`} />
@@ -65,7 +65,7 @@ export function CloseCashForm({ expectedCents }: { expectedCents: number }) {
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-wrap items-end gap-3 border border-white/10 bg-teal-deep p-4">
+    <form onSubmit={submit} className="flex flex-wrap items-end gap-3 border border-white/10 bg-steel p-4">
       <label className="flex flex-col gap-1.5">
 <span className={labelClass}>Dinheiro contado na gaveta</span>
         <input inputMode="decimal" placeholder="0,00" value={counted} onChange={(e) => setCounted(e.target.value)} className={`${fieldClass} w-40 text-right`} />
@@ -110,7 +110,7 @@ export function CashMovementForm() {
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-wrap items-end gap-3 border border-white/10 bg-teal-deep p-4">
+    <form onSubmit={submit} className="flex flex-wrap items-end gap-3 border border-white/10 bg-steel p-4">
       <label className="flex flex-col gap-1.5">
 <span className={labelClass}>Tipo</span>
         <select value={`${kind}:${direction}`} onChange={(e) => {

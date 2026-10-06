@@ -82,7 +82,7 @@ export function ExpenseForm({
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-4 border border-white/10 bg-teal-deep p-4">
+    <form onSubmit={submit} className="flex flex-col gap-4 border border-white/10 bg-steel p-4">
       <div className="flex flex-wrap gap-3">
         <Field label="Descrição" className="min-w-56 flex-[2]">
           <input required value={description} onChange={(e) => setDescription(e.target.value)} className={fieldClass} />
@@ -253,7 +253,7 @@ export function RecurringManager({
           ))}
         </ul>
       )}
-      <form onSubmit={add} className="flex flex-wrap items-end gap-3 border border-white/10 bg-teal-deep p-4">
+      <form onSubmit={add} className="flex flex-wrap items-end gap-3 border border-white/10 bg-steel p-4">
         <Field label="Descrição" className="min-w-48 flex-[2]">
           <input required value={description} onChange={(e) => setDescription(e.target.value)} className={fieldClass} />
         </Field>

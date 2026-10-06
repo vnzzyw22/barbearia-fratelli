@@ -357,7 +357,7 @@ export function AgendaWeekView({
             className={`flex flex-col gap-2 rounded-lg border p-3 ${
               day.isToday
                 ? "border-brand-red bg-brand-red/[0.06]"
-                : "border-white/10 bg-teal-deep"
+                : "border-white/10 bg-steel"
             }`}
           >
             <div className="flex items-baseline justify-between">

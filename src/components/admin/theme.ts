@@ -6,7 +6,7 @@
 // só que num módulo próprio porque aqui são várias telas, não um formulário
 // só.
 
-export const cardClass = "rounded-none border border-white/10 bg-teal-deep p-4";
+export const cardClass = "rounded-none border border-white/10 bg-steel p-4";
 
 export const fieldClass =
   "rounded-none border border-transparent bg-white/[0.06] px-3 py-2 text-sm text-white [color-scheme:dark] transition-colors duration-200 outline-none focus:border-brand-red placeholder:text-white/30";

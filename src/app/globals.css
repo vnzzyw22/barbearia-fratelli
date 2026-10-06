@@ -1,44 +1,80 @@
 @import "tailwindcss";
 
 /* ───────────────────────────────────────────────────────────────
-   FRATELLI BARBER CLUB — design tokens
-   Cores amostradas da logo oficial: teal #125660, dourado #D0A066.
-   O dourado é ACENTO (linhas, números, estados); o teal é a base.
+   BLEND BARBER CLUB — design tokens
+   Azul royal como protagonista; branco e preto/cinza como base.
+   Ver BLEND_DESIGN.md para a direção de arte completa.
+
+   Tokens antigos da Fratelli (--teal/--gold/--ivory/--mist/--clay/
+   --charcoal/--paper) ficam abaixo, INALTERADOS por enquanto: as seções
+   públicas ainda não reconstruídas (serviços, equipe, clube, galeria,
+   footer, booking) continuam lendo esses nomes até serem refeitas — ver
+   status no BLEND_DESIGN.md. Não remover sem antes migrar quem usa.
    ─────────────────────────────────────────────────────────────── */
 :root {
-  --background: #125660;
-  --foreground: #f3ecdd;
+  --background: var(--ink);
+  --foreground: var(--white);
 
-  /* Marca */
-  --teal: #125660; /* primário — exatamente o da logo */
-  --teal-deep: #0d434b; /* seções de contraste */
-  --teal-ink: #082a30; /* rodapé, painel admin, sombras */
-  --teal-soft: #1b6b76; /* hover/elevação sobre teal */
-  --gold: #d0a066; /* dourado da logo — sobre teal */
-  --gold-deep: #75531b; /* dourado escurecido — texto sobre marfim (AA 5.3+) */
-  --gold-soft: #e6c08a; /* dourado claro — texto pequeno sobre teal (AA) */
-  --ivory: #f3ecdd; /* branco quente */
-  --paper: #e8dfca; /* marfim médio — seções claras */
-  --charcoal: #182022; /* texto sobre marfim */
-  --mist: #bcd2d3; /* texto secundário sobre teal */
-  --clay: #4c5f61; /* texto secundário sobre marfim */
+  /* Blend — marca */
+  --royal: #1a3ae0; /* protagonista: CTAs, acentos, estados */
+  --royal-deep: #10238f; /* seções de contraste sobre azul */
+  --royal-soft: #aebcff; /* azul claro — texto pequeno sobre ink/royal (AA) */
+  --royal-ink: #142c9e; /* azul escurecido — texto/ícone sobre branco (AA) */
+  --ink: #0a0a0d; /* preto quase puro — base escura */
+  --steel: #15161d; /* superfície escura secundária (cards, painel) */
+  --white: #ffffff;
+  --paper: #efeee8; /* marfim claro — seções de respiro, nunca branco papel */
+  --fog: #9aa3c9; /* texto secundário sobre ink/royal */
+  --line: rgba(255, 255, 255, 0.12); /* hairline sobre fundo escuro */
+  --line-on-paper: rgba(10, 10, 13, 0.14);
 
   /* Aliases legados do template (admin/agendamento usam estes nomes;
-     só os VALORES mudaram) */
-  --color-brand-red: var(--gold);
-  --color-brand-black: var(--teal-ink);
-  --color-brand-ink: var(--teal-ink);
-  --color-brand-cream: var(--ivory);
-  --color-brand-oxblood: var(--teal-deep);
-  --color-brand-smoke: var(--mist);
-  --color-brand-paper: var(--teal);
+     agora repontam para a paleta Blend) */
+  --color-brand-red: var(--royal);
+  --color-brand-black: var(--ink);
+  --color-brand-ink: var(--ink);
+  --color-brand-cream: var(--white);
+  --color-brand-oxblood: var(--royal-deep);
+  --color-brand-smoke: var(--fog);
+  --color-brand-paper: var(--steel);
 
   --ease-signature: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Tipografia Blend: 2 famílias só (ver BLEND_DESIGN.md).
+     --font-body/--font-heading vêm do next/font (layout.tsx, variable=).
+     --font-display e --font-brand reaproveitam a MESMA fonte do corpo
+     (Archivo) em peso 900 via .font-display — é decisão de peso, não
+     família nova. --font-label reaproveita a condensada (Big Shoulders). */
+  --font-display: var(--font-body);
+  --font-brand: var(--font-body);
+  --font-label: var(--font-heading);
+
+  /* Fratelli — tokens antigos (ver nota acima) */
+  --teal: #125660;
+  --teal-deep: #0d434b;
+  --teal-ink: #082a30;
+  --teal-soft: #1b6b76;
+  --gold: #d0a066;
+  --gold-deep: #75531b;
+  --gold-soft: #e6c08a;
+  --ivory: #f3ecdd;
+  --paper-old: #e8dfca;
+  --charcoal: #182022;
+  --mist: #bcd2d3;
+  --clay: #4c5f61;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-royal: var(--royal);
+  --color-royal-deep: var(--royal-deep);
+  --color-royal-soft: var(--royal-soft);
+  --color-royal-ink: var(--royal-ink);
+  --color-ink: var(--ink);
+  --color-steel: var(--steel);
+  --color-white: var(--white);
+  --color-fog: var(--fog);
   --color-teal: var(--teal);
   --color-teal-deep: var(--teal-deep);
   --color-teal-ink: var(--teal-ink);
@@ -100,12 +136,13 @@ select option {
 
 /* ── Elementos de marca ─────────────────────────────────────── */
 
-/* Label (botões, navegação): Zilla Slab caixa-alta, tracking largo */
+/* Label (botões, navegação): Big Shoulders Display caixa-alta — condensada
+   já tem presença própria, por isso o tracking é bem menor que uma sans comum. */
 .label {
-  font-family: var(--font-label), Georgia, serif;
-  font-weight: 600;
+  font-family: var(--font-label), Arial Narrow, sans-serif;
+  font-weight: 700;
   font-size: 0.72rem;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
 }
 
@@ -186,7 +223,7 @@ summary {
   touch-action: manipulation;
 }
 html {
-  -webkit-tap-highlight-color: rgba(208, 160, 102, 0.25);
+  -webkit-tap-highlight-color: rgba(26, 58, 224, 0.25);
 }
 
 /* ── Refino (impeccable/frontend-design) ───────────────────── */
@@ -210,11 +247,11 @@ html {
 
 /* Superfícies do navegador que também carregam a marca */
 html {
-  scrollbar-color: var(--gold) var(--teal-ink);
+  scrollbar-color: var(--royal) var(--ink);
 }
 input,
 textarea {
-  caret-color: var(--gold);
+  caret-color: var(--royal);
 }
 a {
   text-underline-offset: 0.25em;
@@ -226,15 +263,21 @@ html {
   scroll-padding-bottom: 5.5rem;
 }
 
-/* Tipografia: títulos secundários em Stint (caixa-alta, como o BARBER CLUB da logo);
-   títulos principais em Anton. Sem itálico/negrito sintético (fontes de peso único). */
+/* Tipografia Blend: títulos secundários/labels em Big Shoulders Display
+   (condensada, caixa-alta, ar de signage americano); títulos principais em
+   Archivo peso 900 (geométrica, caixa-alta). Duas famílias só — ver
+   BLEND_DESIGN.md. font-synthesis off porque o peso é sempre explícito. */
 @layer components {
   .font-heading {
     text-transform: uppercase;
-    letter-spacing: 0.035em;
+    letter-spacing: 0.01em;
+    font-weight: 700;
   }
   .font-display {
     text-transform: uppercase;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    font-synthesis: none;
   }
 }
 
@@ -256,9 +299,9 @@ html {
   letter-spacing: 0.1em;
   line-height: 1;
   text-transform: uppercase;
-  color: var(--teal-ink);
-  background-color: var(--gold);
-  background-image: linear-gradient(var(--ivory), var(--ivory));
+  color: var(--white);
+  background-color: var(--royal);
+  background-image: linear-gradient(var(--white), var(--white));
   background-repeat: no-repeat;
   background-position: left center;
   background-size: 0% 100%;
@@ -269,21 +312,22 @@ html {
 }
 .btn:hover:not(:disabled) {
   background-size: 100% 100%;
+  color: var(--ink);
 }
 .btn:active:not(:disabled) {
   transform: translateY(1px);
 }
 .btn:disabled {
   background-image: none;
-  background-color: color-mix(in srgb, var(--gold) 30%, transparent);
-  color: color-mix(in srgb, var(--ivory) 55%, transparent);
+  background-color: color-mix(in srgb, var(--royal) 30%, transparent);
+  color: color-mix(in srgb, var(--white) 55%, transparent);
   cursor: not-allowed;
 }
 .btn-teal {
-  color: var(--ivory);
-  background-color: var(--teal);
-  background-image: linear-gradient(var(--gold), var(--gold));
+  color: var(--white);
+  background-color: var(--ink);
+  background-image: linear-gradient(var(--royal), var(--royal));
 }
 .btn-teal:hover:not(:disabled) {
-  color: var(--teal-ink);
+  color: var(--white);
 }

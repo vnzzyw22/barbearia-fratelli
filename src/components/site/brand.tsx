@@ -1,8 +1,9 @@
 import Image from "next/image";
 
-// Peças da linguagem visual Fratelli derivadas da logo oficial.
-// O emblema (leão + anel) é o asset oficial recortado; os arcos repetem a
-// moldura circular da logo como sistema.
+// `Emblem`/`BrandLockup`/`LionMark`/`Rings`/`DiamondRule` abaixo são da
+// identidade ANTERIOR (Fratelli) — ficam só até as seções que ainda os usam
+// (serviços, equipe, clube, galeria, footer) serem reconstruídas na
+// identidade Blend. `BlendMark`/`RazorGlyph`, mais abaixo, são os novos.
 
 export function Emblem({
   className,
@@ -85,6 +86,55 @@ export function DiamondRule({ className }: { className?: string }) {
     <div aria-hidden="true" className={`rule-diamond ${className ?? ""}`}>
       <i />
     </div>
+  );
+}
+
+/**
+ * Wordmark Blend: tipográfico, sem arquivo de logo (o cliente ainda não
+ * entregou um — ver BLEND_DESIGN.md). "BLEND" em Archivo 900 + "BARBER CLUB"
+ * em Big Shoulders tracked, como no briefing. `tone="dark"` é para usar sobre
+ * fundo claro (--paper/--white); o padrão é claro sobre fundo escuro.
+ */
+export function BlendMark({
+  size = "sm",
+  tone = "light",
+  className,
+}: {
+  size?: "sm" | "lg";
+  tone?: "light" | "dark";
+  className?: string;
+}) {
+  const fg = tone === "light" ? "text-white" : "text-ink";
+  const accent = tone === "light" ? "text-royal-soft" : "text-royal-ink";
+  return (
+    <span className={`flex flex-col leading-none ${className ?? ""}`}>
+      <span
+        translate="no"
+        className={`font-display ${fg} ${size === "lg" ? "text-[2rem] sm:text-[2.6rem]" : "text-[1.3rem]"}`}
+      >
+        Blend
+      </span>
+      <span className={`label mt-0.5 ${accent} ${size === "lg" ? "text-[0.8rem]" : "text-[0.55rem]"}`}>
+        Barber Club
+      </span>
+    </span>
+  );
+}
+
+/**
+ * Uma navalha reta (lâmina + cabo articulado), grafismo original e simples —
+ * legível tanto minúscula (ao lado de um label) quanto grande (marca d'água).
+ * `crossed`: desenha uma segunda cópia espelhada, para o uso como par cruzado.
+ */
+export function RazorGlyph({ className, crossed = false }: { className?: string; crossed?: boolean }) {
+  const blade = (
+    <path d="M6 37 L34 9 Q37 6 40 9 T40 15 L14 41 Q10 45 6 41 Q4 39 6 37 Z" />
+  );
+  return (
+    <svg aria-hidden="true" viewBox="0 0 48 48" fill="currentColor" className={className}>
+      {blade}
+      {crossed && <g transform="matrix(-1 0 0 1 48 0)">{blade}</g>}
+    </svg>
   );
 }
 

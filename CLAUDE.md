@@ -1,13 +1,24 @@
 @AGENTS.md
 
-# Fratelli Barber Club — guia do projeto
+# Blend Barber Club — guia do projeto
 
-Site + agendamento + painel administrativo da **Fratelli Barber Club**.
-Criado em 2026-09-23 como **rebranding completo** de uma cópia do projeto
-`barbearia-fialho` (mesmo template Lkas Locs → Tesouras Club → Fialho).
-Cópia feita sem `.git`, `.vercel`, `.env.local` e `midia-cliente`, de
-propósito: o site da Fialho segue em produção com cliente real e este
-projeto **nunca deve apontar para o Supabase/Vercel dela**.
+Site + agendamento + painel administrativo, hoje com a marca **Blend Barber
+Club**. Criado em 2026-09-23 como rebranding completo de uma cópia do projeto
+`barbearia-fialho` (mesmo template Lkas Locs → Tesouras Club → Fialho →
+**Fratelli** → **Blend**, 2026-10-06). Cópia feita sem `.git`, `.vercel`,
+`.env.local` e `midia-cliente`, de propósito: o site da Fialho segue em
+produção com cliente real e este projeto **nunca deve apontar para o
+Supabase/Vercel dela**.
+
+## Rebrand Fratelli → Blend (2026-10-06)
+
+Reconstrução visual completa pedida pelo cliente ("modern-retro barbershop",
+azul royal + branco + preto), preservando 100% do sistema (agendamento, RLS,
+admin, financeiro — nada disso mudou). Em andamento, por etapas; ver
+**DESIGN.md** para a identidade nova e o status exato de cada seção
+(reconstruída vs. ainda na identidade antiga/Fratelli). Sem logo-arquivo da
+Blend (cliente não enviou) — identidade só tipográfica + grafismos originais
+(`RazorGlyph`, `PoleBand`) até existir um arquivo real.
 
 ## Stack (inalterada)
 
@@ -18,15 +29,17 @@ tocou só camada visual e textos de marca.
 
 ## Identidade
 
-Ver **DESIGN.md** (tokens, tipografia, assinaturas visuais). Resumo: teal
-`#125660` + dourado `#D0A066` (acento) + marfim; Bodoni Moda / Zilla Slab /
-Hanken Grotesk. Logo derivada por `scripts/build-brand-assets.mjs`
-(fonte: logo PNG entregue pelo cliente; rodar de novo se chegar arquivo melhor:
-`node scripts/build-brand-assets.mjs <logo.png>`).
+Ver **DESIGN.md** (identidade Blend atual: azul royal `#1A3AE0` + branco +
+ink `#0A0A0D`; Archivo + Big Shoulders). Os tokens antigos da Fratelli (teal
+`#125660`/dourado `#D0A066`/ivory) continuam em `globals.css`, **inalterados**,
+porque as seções públicas ainda não reconstruídas os usam — não remover sem
+migrar quem usa primeiro.
 
 Tokens legados do template (`brand-red/ink/cream/...`) foram **mantidos como
-aliases** (só os valores mudaram) porque o admin e o agendamento usam esses
-nomes. Tokens novos (`teal`, `gold`, `ivory`, `paper`...) no site público.
+aliases**, só repontados de novo (Fratelli → Blend): é por isso que o painel
+admin inteiro já está na identidade nova sem nenhuma lógica alterada. Tokens
+novos da Blend: `royal`, `royal-deep`, `royal-soft`, `royal-ink`, `ink`,
+`steel`, `white`, `paper`, `fog`.
 
 ## Modo de pré-visualização
 
@@ -48,9 +61,19 @@ agendamento exigem um Supabase próprio da Fratelli (**ainda não criado**).
 
 ## Pendências (bloqueadas no cliente)
 
-- [ ] **Logo em alta / vetorial (cliente ainda não tem — aguardando)**: o arquivo recebido é 529×527, com JPEG
+- [ ] **Reconstrução visual Blend em andamento (2026-10-06):** feito — tokens/fontes
+  globais, Navbar, Hero, todo o painel admin (login/dashboard/agenda/financeiro/
+  cartões). Falta — Serviços, O Clube, Equipe, Galeria, FAQ, Footer, `/agendar`,
+  `PhotoSlot` compartilhado (ainda usam `LionMark`/cores antigas). Não fazer deploy
+  em produção até essas seções serem refeitas: hoje o site público mostraria Hero
+  novo (Blend) seguido de seções com a logo/cor da Fratelli, inconsistente.
+- [ ] **Logo da Blend:** cliente não enviou nenhum arquivo. Identidade hoje é só
+  tipográfica (Archivo + Big Shoulders) + grafismos originais (`RazorGlyph`,
+  `PoleBand`) — ver DESIGN.md. A pendência antiga de logo da Fratelli (abaixo) ficou
+  obsoleta com o rebrand.
+- [ ] **Logo em alta / vetorial da FRATELLI (obsoleto — projeto agora é Blend)**: o arquivo recebido era 529×527, com JPEG
   artefatos e o wordmark FRATELLI cortado nas bordas (F e I). Ampliado a
-  1440px fica macio. Pedir SVG/PDF ou PNG ≥ 2000px **com o wordmark inteiro**.
+  1440px fica macio. Mantido aqui só como histórico; não pedir mais este arquivo.
 - [x] **Confirmados pelo cliente (2026-09-23):** WhatsApp = (44) 99916-1432 (`business_settings.whatsapp`),
   cidade = Maringá-PR. Endereço ("Av. das Grevíleas, 148 — Maringá, PR"), Instagram (@fratellibarberclub) e o
   outro telefone (44) 99916-7632 foram lidos da placa (`public/brand/foto-faxada.jpg`). Mapa = link

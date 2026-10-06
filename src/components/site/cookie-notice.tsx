@@ -41,11 +41,11 @@ export function CookieNotice() {
     <div
       role="region"
       aria-label="Aviso de cookies"
-      className="fixed right-3 bottom-[5.25rem] left-3 z-[60] border border-gold/50 bg-teal-ink p-4 text-ivory shadow-[0_8px_30px_-8px_rgba(0,0,0,0.6)] md:right-auto md:bottom-5 md:left-5 md:max-w-sm"
+      className="fixed right-3 bottom-[5.25rem] left-3 z-[60] border border-white/15 bg-steel p-4 text-white shadow-[0_8px_30px_-8px_rgba(0,0,0,0.6)] md:right-auto md:bottom-5 md:left-5 md:max-w-sm"
     >
-      <p className="text-[0.92rem] leading-relaxed text-ivory/90">
+      <p className="text-[0.92rem] leading-relaxed text-white/90">
         Este site usa apenas cookies essenciais ao funcionamento. Não usamos cookies de publicidade nem de análise.{" "}
-        <Link href="/politica-de-cookies" className="font-semibold text-gold-soft underline">
+        <Link href="/politica-de-cookies" className="font-semibold text-royal-soft underline">
           Saiba mais
         </Link>
       </p>

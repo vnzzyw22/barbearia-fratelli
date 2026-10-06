@@ -1,93 +1,94 @@
 ---
-name: Fratelli Barber Club
-description: Barber club italiano com herança editorial — teal profundo + dourado envelhecido + marfim, tipografia didone. Sem o clichê preto+dourado.
+name: Blend Barber Club
+description: Modern-retro barbershop — azul royal protagonista, branco e preto/cinza como base. Americana, urbana, editorial, premium; sem o clichê preto+dourado nem cara de SaaS.
 colors:
-  teal (primário, da logo): "#125660"
-  teal-deep: "#0d434b"
-  teal-ink (rodapé/admin): "#082a30"
-  gold (acento, da logo): "#d0a066"
-  gold-deep (texto sobre marfim, AA): "#8a6428"
-  ivory: "#f3ecdd"
-  paper: "#e8dfca"
-  charcoal (texto sobre marfim): "#182022"
-  mist (texto secundário sobre teal): "#a9c2c3"
-  clay (texto secundário sobre marfim): "#55686a"
+  royal (protagonista): "#1A3AE0"
+  royal-deep (seções de contraste): "#10238F"
+  royal-soft (texto pequeno sobre ink/royal, AA): "#AEBCFF"
+  royal-ink (texto/ícone sobre branco, AA): "#142C9E"
+  ink (base escura): "#0A0A0D"
+  steel (superfície escura secundária): "#15161D"
+  white: "#FFFFFF"
+  paper (respiro claro, nunca branco papel puro): "#EFEEE8"
+  fog (texto secundário sobre ink/royal): "#9AA3C9"
 typography:
-  display: "Anton 400 — título principal, caixa-alta (a mais próxima, entre as gratuitas, do lettering FRATELLI da logo)"
-  heading: "Stint Ultra Condensed 400 — títulos secundários, nav e botões, caixa-alta (a mais próxima do BARBER CLUB da logo)"
-  body: "Hanken Grotesk 400–700 — corpo e metadados"
+  display: "Archivo 900 — título principal, wordmark BLEND, caixa-alta. Mesma família do corpo, peso diferente: decisão de 'menos famílias, mais peso', não pilha de fontes."
+  heading: "Big Shoulders 700/800 — BARBER CLUB, nav, labels, numerais, botões. Condensada de inspiração collegiate/signage americano, sem caricatura de barbearia vintage."
+  body: "Archivo 400–700 — corpo e metadados."
 ---
 
-# Fratelli Barber Club — direção de arte
+# Blend Barber Club — direção de arte
 
-Identidade oficial = a logo entregue pelo cliente (leão em anel dourado +
-wordmark FRATELLI em branco + "BARBER CLUB", sobre teal `#125660`). Cores
-**amostradas dos pixels da logo** (teal 18,86,95; dourado 208,160,102).
+Reconstrução completa da camada visual sobre o sistema que já existia (agendamento,
+Supabase, admin, financeiro — ver CLAUDE.md). Sem logo/arquivo de marca entregue pelo
+cliente: a identidade é 100% tipográfica + grafismos originais (sem depender de um
+arquivo que não existe). Se chegar um logo real depois, ele entra como peça nova; o
+sistema tipográfico continua valendo.
 
 ## Conceito
 
-*Italian barber club × herança × editorial contemporâneo.* Tradicional sem
-parecer antigo; premium sem ostentação. **O teal é a base; o dourado é
-acento** (linhas, números, estados, um botão) — nunca "preto e dourado".
-Ritmo por blocos de cor: teal → marfim → teal profundo → marfim médio →
-teal → teal profundo → quase-preto.
+*Modern-retro barbershop*: barbearia americana clássica × cultura urbana × design
+editorial × minimalismo geométrico. Pensar numa fachada de ACM azul royal brilhante,
+cadeiras Chesterfield pretas, iluminação forte — e traduzir isso para o digital por
+composição (grids assimétricos, linhas, tipografia grande), não por colar fotos de
+barbearia num fundo escuro.
 
-## Tipografia (teste de 2026-09-23: fontes gratuitas comparadas lado a lado com a logo)
+**O azul royal é o protagonista** — aparece em CTAs, estados, acentos, a segunda linha
+do título, a marca d'água do wordmark — mas o site não pode virar "preto com azul": a
+composição alterna ink (preto quase puro) → paper (claro) → royal como bloco cheio em
+pontos específicos (ainda a construir nas seções abaixo do Hero).
 
-A logo usa lettering próprio/modificado — a fonte exata não é identificável pela imagem. Aproximação
-gratuita: **Anton** (FRATELLI) e **Stint Ultra Condensed** (BARBER CLUB). Substituiu Bodoni Moda + Zilla
-Slab, cujo visual didone lia como "estético de IA". 3 famílias no total.
+## Tipografia
 
-- **Anton** — hero, títulos de seção, a palavra "Fratelli" ao lado do emblema, "CLUB" monumental.
-  Sempre caixa-alta (`.font-display`). Peso único.
-- **Stint Ultra Condensed** — nomes de serviço, preços, horários, perguntas do FAQ, pilares, nomes da
-  equipe, botões e nav (`.font-heading` e `.label`). Caixa-alta, tracking 0.035–0.12em. Peso único;
-  usar em corpo ≥ 1.4rem (é muito estreita).
-- **Hanken Grotesk** — corpo, metadados (`.meta`), rótulos de campo (`.field-label`).
-- Sem itálico/negrito: as duas display têm só um peso (`font-synthesis: none`). O destaque do título do
-  Clube é **cor** (dourado), não itálico. `latin-ext` sempre incluído (Ç, acentos).
-- Se o cliente achar o nome da fonte real (ou o arquivo original da logo), trocar `--font-display` /
-  `--font-heading` em `layout.tsx`.
+Duas famílias só, de propósito (ver `layout.tsx`):
 
-## Assinaturas visuais (o que faz reconhecer a Fratelli sem a logo)
+- **Archivo** (`--font-body`, variável `.font-display` em peso 900) — geométrica,
+  grotesca, sem o ar de SaaS de Inter/Manrope. Usada tanto no texto corrido (400–700)
+  quanto, em preto (900), no wordmark "BLEND" e títulos de seção.
+- **Big Shoulders** (`--font-heading`/`--font-label`) — condensada de inspiração
+  collegiate/signage americano (não script de barbearia). Nav, botões, labels,
+  numerais, "BARBER CLUB" no lockup.
 
-1. **Anel** — a moldura circular da logo vira sistema: arcos concêntricos
-   (`Rings`), medalhão de anel duplo nos números e retratos (`.medallion`).
-2. **Leão em marca d'água** — o alfa do emblema oficial como máscara CSS
-   (`.lion-mask` / `LionMark`), dourado sobre teal ou teal sobre marfim.
-3. **Divisor linha–losango–linha** (`.rule-diamond`), copiado da moldura de
-   "BARBER CLUB".
-4. **Labels em slab caixa-alta** + numerais romanos (I, II, III) nos passos.
-5. **Botões retos** (sem pill, sem `rounded-xl`), dourado sólido, losango
-   como marcador no lugar de seta.
-6. **CLUB monumental** tom sobre tom na seção O Clube.
+## Grafismos da marca (sistema, não decoração aleatória)
 
-## Layout
+1. **Barber pole** (`pole-band.tsx`) — faixa diagonal branco/preto/royal, já existia
+   (herdada da Fratelli, só recolorida): usada como divisor de seção.
+2. **Navalha** (`RazorGlyph` em `brand.tsx`) — grafismo original (path próprio, não
+   ícone de banco), reto e legível tanto pequena quanto grande; `crossed` desenha o
+   par cruzado. Usada como marca d'água dentro de placeholders de foto por ora.
+3. **Linhas finas** — hairline `border-white/10`/`border-white/15` separando blocos,
+   como no Hero (citação com borda à esquerda). Ainda não sistematizado como grid
+   completo nas seções abaixo.
+4. **Wordmark monumental de fundo** — "BLEND" gigante em `white/[0.035]` atrás do
+   Hero: profundidade editorial, não efeito gratuito.
 
-- Container 1440px, gutter 20px (mobile) / 48px (desktop), grid 12 colunas.
-- Hero: wordmark oficial em **sangria total** (as letras F e I já vêm
-  cortadas no arquivo do cliente; a 100vw o corte coincide com a borda da
-  tela). Emblema no campo superior, com parallax leve e arcos.
-- Serviços: **tabela editorial** (medalhão · nome · pontilhado · preço),
-  linha inteira é o link; hover "enche" de teal por baixo. Sem cards.
-- Mobile é composição própria: emblema + headline + CTA + wordmark cabem na
-  primeira tela; menu em tela cheia com numeração.
+## Tokens e como eles se espalham pelo projeto
 
-## Motion
+`globals.css` mantém os tokens antigos da Fratelli (`--teal`/`--gold`/`--ivory`/
+`--mist`/`--clay`) **inalterados**, porque seções públicas ainda não reconstruídas os
+usam. Os tokens novos (`--royal`/`--ink`/`--steel`/`--white`/`--paper`/`--fog`) são a
+paleta Blend. A ponte: os aliases legados do template (`--color-brand-red`,
+`--color-brand-black`, `--color-brand-ink`, `--color-brand-cream`,
+`--color-brand-oxblood`, `--color-brand-smoke`, `--color-brand-paper`) — que o painel
+admin inteiro usa — foram repontados para a paleta Blend. Isso re-pintou o admin
+completo (login, dashboard, agenda, financeiro, clientes, serviços, galeria,
+configurações) sem tocar em nenhuma lógica.
 
-Curva única `--ease-signature` (`EASE`). Títulos por **máscara de linha**;
-hero com wipe do wordmark e parallax de 70px no emblema; hover de linha
-enchendo. `prefers-reduced-motion` zera transições/animações e o parallax.
-Sem scroll-jacking, sem 3D.
+## Status (ver CLAUDE.md para a lista completa)
 
-## Imagem
+**Reconstruído:** tokens + 2 fontes (globais, afetam tudo); Navbar; Hero; login admin;
+sidebar do admin; `.btn`/`.label`/cartões do admin (`cardClass`) — logo todo o painel
+administrativo herdou a paleta nova automaticamente.
 
-Nenhuma foto de banco. Sem foto real, o slot é placeholder explícito
-("Foto em breve" sobre o leão em marca d'água). Fotos reais entram sem filtro.
+**Ainda na identidade antiga (Fratelli: teal/dourado, leão, Anton/Stint/Bodoni só onde
+hardcoded em cor — a fonte já trocou):** seções Serviços, O Clube, Equipe, Galeria,
+FAQ, Footer, fluxo público de `/agendar`, `CookieNotice` (já corrigido), `PhotoSlot`
+compartilhado (`LionMark`).
 
-## Regras de derivação da logo (`scripts/build-brand-assets.mjs`)
+## Anti-genérico aplicado aqui
 
-Só recorte + ampliação 4× (lanczos) + reforço de borda; o emblema tem o
-teal removido por chave de cor (ouro puro com alfa). **Nada é redesenhado.**
-Arquivo-fonte veio 529×527 com artefato de captura na última coluna
-(descartada). Precisa de versão vetorial/alta para nitidez máxima.
+Sem hero centralizada; título grande tem motivo (é o nome da marca + a ação real).
+Sem três cards; sem glassmorphism/gradiente genérico; sem ícone decorativo ilegível
+(o grafismo da navalha foi redesenhado depois de ficar ilegível pequeno — ver lição
+nos commits). CTA único e claro ("Agendar horário"), sem "Nossos serviços"/"Por que
+escolher" ainda escritos (pendente nas próximas seções).

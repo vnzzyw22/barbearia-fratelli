@@ -119,7 +119,7 @@ export function SettingsTab({
         title="Formas de pagamento e taxas"
         question="Taxas começam em 0% — nenhuma é presumida. Informe a taxa real da sua maquininha para ver o líquido correto."
       >
-        <div className="border border-white/10 bg-teal-deep">
+        <div className="border border-white/10 bg-steel">
           {methods.map((m) => <MethodRow key={m.code} method={m} />)}
         </div>
       </Block>
