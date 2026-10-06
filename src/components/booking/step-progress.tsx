@@ -19,16 +19,16 @@ export function StepProgress({ steps, currentStep }: StepProgressProps) {
     >
       {steps.map((label, i) => (
         <div key={label} className="flex flex-1 flex-col gap-2.5">
-          <span aria-hidden="true" className="relative h-px w-full bg-gold/25">
+          <span aria-hidden="true" className="relative h-px w-full bg-white/15">
             <span
-              className={`absolute inset-y-[-1px] left-0 h-[3px] bg-gold transition-[width] duration-500 ease-[var(--ease-signature)] ${
+              className={`absolute inset-y-[-1px] left-0 h-[3px] bg-royal transition-[width] duration-500 ease-[var(--ease-signature)] ${
                 i <= currentStep ? "w-full" : "w-0"
               }`}
             />
           </span>
           <span
             className={`meta flex items-center gap-2 font-semibold transition-colors ${
-              i === currentStep ? "text-ivory" : i < currentStep ? "text-gold-soft" : "text-mist/60"
+              i === currentStep ? "text-white" : i < currentStep ? "text-royal-soft" : "text-fog/60"
             }`}
           >
             <span aria-hidden="true" className="font-heading">{ROMAN[i]}</span>

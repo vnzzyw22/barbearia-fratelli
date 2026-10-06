@@ -138,6 +138,67 @@ export function RazorGlyph({ className, crossed = false }: { className?: string;
   );
 }
 
+/**
+ * Selo Blend: reconstrução do logo real enviado pelo cliente (2026-10-06) —
+ * fundo azul royal, "BARBER CLUB" no topo, símbolo de duas navalhas/máquinas
+ * espelhadas no centro, "BLEND" na base com o último "D" espelhado (detalhe
+ * do logo original). Sem o arquivo original em alta — se o cliente mandar o
+ * arquivo de verdade (não só colado no chat), trocar por ele aqui.
+ */
+export function BlendBadge({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 200 200" className={className}>
+      <rect width="200" height="200" fill="var(--royal)" />
+      <text
+        x="100"
+        y="38"
+        textAnchor="middle"
+        fontFamily="var(--font-heading), sans-serif"
+        fontWeight={700}
+        fontSize="13"
+        letterSpacing="2.5"
+        fill="var(--white)"
+      >
+        BARBER CLUB
+      </text>
+      <g stroke="var(--white)" strokeWidth="3" strokeLinecap="round" fill="none">
+        <line x1="40" y1="100" x2="160" y2="100" />
+        <g transform="translate(84 62)">
+          <rect x="-10" y="0" width="20" height="58" rx="6" />
+          <line x1="-10" y1="20" x2="10" y2="20" />
+        </g>
+        <g transform="translate(116 62) scale(-1 1)">
+          <rect x="-10" y="0" width="20" height="58" rx="6" />
+          <line x1="-10" y1="20" x2="10" y2="20" />
+        </g>
+      </g>
+      <text
+        x="78"
+        y="168"
+        textAnchor="middle"
+        fontFamily="var(--font-display), sans-serif"
+        fontWeight={900}
+        fontSize="40"
+        fill="var(--white)"
+      >
+        BLEN
+      </text>
+      <text
+        x="152"
+        y="168"
+        textAnchor="middle"
+        fontFamily="var(--font-display), sans-serif"
+        fontWeight={900}
+        fontSize="40"
+        fill="var(--white)"
+        transform="scale(-1 1) translate(-304 0)"
+      >
+        D
+      </text>
+    </svg>
+  );
+}
+
 /** Medalhão de anel duplo (deriva da moldura da logo). */
 export function Medallion({
   children,

@@ -39,7 +39,7 @@ export function MobileBookBar() {
 
   return (
     <div
-      className={`fixed inset-x-0 bottom-0 z-40 border-t border-gold/40 bg-teal-ink px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] transition-transform duration-300 ease-[var(--ease-signature)] md:hidden ${
+      className={`fixed inset-x-0 bottom-0 z-40 border-t border-royal/30 bg-ink px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] transition-transform duration-300 ease-[var(--ease-signature)] md:hidden ${
         visible ? "translate-y-0" : "translate-y-full"
       }`}
       inert={!visible}
@@ -48,7 +48,7 @@ export function MobileBookBar() {
         href="/agendar"
         className="btn flex min-h-12 items-center justify-center gap-3 px-6 py-3.5"
       >
-        Reservar horário
+        Agendar horário
         <span aria-hidden="true" className="h-1.5 w-1.5 rotate-45 bg-current" />
       </Link>
     </div>

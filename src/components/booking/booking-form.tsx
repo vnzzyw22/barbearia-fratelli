@@ -42,7 +42,7 @@ interface SlotPickerProps {
 // select em tema escuro — sem isso o ícone do calendário sai escuro
 // sobre fundo escuro, quase invisível.
 const fieldClass =
-  "min-h-12 rounded-none border-0 border-b border-gold/40 bg-teal/70 px-3 py-3 text-base text-ivory [color-scheme:dark] transition-colors duration-200 focus:border-gold focus:bg-teal";
+  "min-h-12 rounded-none border-0 border-b border-royal/40 bg-ink/70 px-3 py-3 text-base text-white [color-scheme:dark] transition-colors duration-200 focus:border-royal focus:bg-ink";
 
 const labelClass =
   "field-label";
@@ -88,11 +88,11 @@ function SlotPicker({
     };
   }, [serviceId, staffId, dateISO]);
 
-  if (loading) return <p role="status" aria-live="polite" className="text-sm text-mist">Carregando horários…</p>;
+  if (loading) return <p role="status" aria-live="polite" className="text-sm text-fog">Carregando horários…</p>;
   if (error) return <p role="alert" className="text-sm text-[#f0a48f]">{error}</p>;
   if (!slots || slots.length === 0) {
     return (
-      <p className="text-sm text-mist">
+      <p className="text-sm text-fog">
         Nenhum horário disponível nessa data. Tente outro dia.
       </p>
     );
@@ -108,8 +108,8 @@ function SlotPicker({
           onClick={() => onSelect(slot)}
           className={`min-h-12 border px-3 py-2.5 font-heading text-2xl tabular-nums transition-colors duration-200 ${
             selectedTime === slot
-              ? "border-gold bg-gold text-teal-ink"
-              : "border-gold/30 bg-teal/70 text-ivory hover:border-gold hover:text-gold-soft"
+              ? "border-royal bg-royal text-white"
+              : "border-royal/30 bg-ink/70 text-white hover:border-royal hover:text-royal-soft"
           }`}
         >
           {slot}
@@ -215,12 +215,12 @@ export function BookingForm({
         transition={{ duration: reduceMotion ? 0.15 : 0.4, ease: EASE }}
         className="flex flex-col items-center gap-5 py-6 text-center"
       >
-        <h2 className="font-heading text-4xl text-ivory">
+        <h2 className="font-heading text-4xl text-white">
           Agendamento enviado!
         </h2>
-        <p className="text-sm text-mist">
+        <p className="text-sm text-fog">
           Seu horário foi registrado e fica pendente até a confirmação da
-          Fratelli Barber Club. Toque abaixo para confirmar pelo WhatsApp e
+          Blend Barber Club. Toque abaixo para confirmar pelo WhatsApp e
           agilizar o retorno.
         </p>
         {state.success.whatsappLink && (
@@ -258,7 +258,7 @@ export function BookingForm({
             <h2
               ref={focusStepHeading}
               tabIndex={-1}
-              className="font-heading text-3xl text-ivory outline-none"
+              className="font-heading text-3xl text-white outline-none"
             >
               {STEP_LABELS[state.step]}
             </h2>
@@ -360,7 +360,7 @@ export function BookingForm({
                     placeholder="(00) 90000-0000"
                     value={state.data.whatsapp}
                     onChange={(e) => setField("whatsapp", e.target.value)}
-                    className={`${fieldClass} placeholder:text-mist/50`}
+                    className={`${fieldClass} placeholder:text-fog/50`}
                   />
                 </div>
 
@@ -380,7 +380,7 @@ export function BookingForm({
                 </div>
 
                 {selectedService && (
-                  <p className="text-sm text-mist">
+                  <p className="text-sm text-fog">
                     Resumo: {selectedService.name} —{" "}
                     {formatPrice(selectedService.price)} (
                     {formatDuration(selectedService.duration_minutes)}) às{" "}
@@ -400,7 +400,7 @@ export function BookingForm({
           <button
             type="button"
             onClick={() => dispatch({ type: "GO_BACK" })}
-            className="label inline-flex min-h-12 shrink-0 items-center gap-2 text-mist transition-colors hover:text-gold-soft"
+            className="label inline-flex min-h-12 shrink-0 items-center gap-2 text-fog transition-colors hover:text-royal-soft"
           >
             <BackIcon />
             Voltar

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BookingForm } from "@/components/booking/booking-form";
-import { BrandLockup, DiamondRule, Emblem, LionMark, Rings } from "@/components/site/brand";
+import { BlendMark, RazorGlyph } from "@/components/site/brand";
 import { getActiveServices, getActiveStaff } from "@/lib/supabase/queries";
 
 export const metadata: Metadata = { title: "Reservar horário" };
@@ -15,16 +15,14 @@ export default async function AgendarPage(props: PageProps<"/agendar">) {
   const preselectedStaffId = first(searchParams.profissional);
 
   return (
-    <div className="relative isolate flex flex-1 flex-col overflow-hidden bg-teal text-ivory">
-      <Rings className="absolute -top-64 -right-64 -z-10 h-[900px] w-[900px] text-gold-soft/15" />
-      <LionMark className="absolute -bottom-24 -left-40 -z-10 h-[520px] w-[520px] bg-gold/[0.06]" />
+    <div className="relative isolate flex flex-1 flex-col overflow-hidden bg-ink text-white">
+      <RazorGlyph crossed className="absolute -bottom-24 -left-40 -z-10 h-[520px] w-[520px] text-royal/[0.07]" />
 
       <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-5 py-5 md:px-8">
-        <Link href="/" className="flex items-center gap-3" aria-label="Fratelli Barber Club — voltar ao início">
-          <Emblem className="h-11 w-11" />
-          <BrandLockup />
+        <Link href="/" className="flex items-center gap-3" aria-label="Blend Barber Club — voltar ao início">
+          <BlendMark />
         </Link>
-        <Link href="/" className="flex min-h-11 items-center font-semibold text-mist underline decoration-gold/40 transition-colors hover:text-gold-soft">
+        <Link href="/" className="flex min-h-11 items-center font-semibold text-fog underline decoration-royal/40 transition-colors hover:text-royal-soft">
           Voltar ao início
         </Link>
       </header>
@@ -35,16 +33,16 @@ export default async function AgendarPage(props: PageProps<"/agendar">) {
             <h1 className="font-display text-[2.8rem] leading-[0.98] sm:text-6xl">
               Reserve seu horário
             </h1>
-            <DiamondRule className="mt-8 max-w-[14rem]" />
+            <div aria-hidden="true" className="mt-8 h-px max-w-[14rem] bg-royal/50" />
             {/* Reasseguração logo na primeira tela: o pedido fica PENDENTE até a confirmação. */}
-            <p className="mt-8 max-w-sm leading-relaxed text-mist">
+            <p className="mt-8 max-w-sm leading-relaxed text-fog">
               Escolha o serviço, o barbeiro, o dia e o horário. Seu pedido fica pendente até a
               confirmação da barbearia, enviada pelo WhatsApp informado no agendamento.
             </p>
           </div>
 
           <div className="lg:col-span-7">
-            <div className="border border-gold/35 bg-teal-deep/60 p-6 md:p-9">
+            <div className="border border-white/15 bg-steel/60 p-6 md:p-9">
               <BookingForm
                 services={services}
                 staff={staff}

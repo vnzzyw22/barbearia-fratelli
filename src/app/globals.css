@@ -116,17 +116,17 @@ body {
 }
 
 ::selection {
-  background: var(--gold);
-  color: var(--teal-ink);
+  background: var(--royal);
+  color: var(--white);
 }
 
-/* Foco visível consistente — dourado sobre teal, teal sobre marfim */
+/* Foco visível consistente — royal sobre fundo escuro, royal-ink sobre claro */
 :focus-visible {
-  outline: 2px solid var(--gold);
+  outline: 2px solid var(--royal);
   outline-offset: 3px;
 }
 .on-paper :focus-visible {
-  outline-color: var(--teal);
+  outline-color: var(--royal-ink);
 }
 
 select option {
@@ -242,7 +242,7 @@ html {
   font-family: var(--font-body), sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--gold-soft);
+  color: var(--royal-soft);
 }
 
 /* Superfícies do navegador que também carregam a marca */

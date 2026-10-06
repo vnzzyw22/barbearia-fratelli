@@ -47,11 +47,11 @@ function PlusMinus({ open }: { open: boolean }) {
   return (
     <span
       aria-hidden="true"
-      className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-gold/50 transition-colors group-hover:bg-gold/15"
+      className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-royal/50 transition-colors group-hover:bg-royal/15"
     >
-      <span className="absolute h-px w-3.5 bg-gold" />
+      <span className="absolute h-px w-3.5 bg-royal-soft" />
       <span
-        className={`absolute h-3.5 w-px bg-gold transition-transform duration-300 ${open ? "scale-y-0 rotate-90" : ""}`}
+        className={`absolute h-3.5 w-px bg-royal-soft transition-transform duration-300 ${open ? "scale-y-0 rotate-90" : ""}`}
       />
     </span>
   );
@@ -69,7 +69,7 @@ function FaqItem({
   const panelId = useId();
 
   return (
-    <div className="border-b border-gold/25">
+    <div className="border-b border-white/12">
       <h3>
         <button
           type="button"
@@ -78,7 +78,7 @@ function FaqItem({
           aria-controls={panelId}
           className="group flex min-h-16 w-full items-center gap-5 py-5 text-left"
         >
-          <span className="flex-1 font-heading text-2xl leading-snug text-ivory transition-colors group-hover:text-gold-soft md:text-3xl">
+          <span className="flex-1 font-heading text-2xl leading-snug text-white transition-colors group-hover:text-royal-soft md:text-3xl">
             {entry.question}
           </span>
           <PlusMinus open={isOpen} />
@@ -94,7 +94,7 @@ function FaqItem({
         aria-hidden={!isOpen}
         inert={!isOpen}
       >
-        <p className="max-w-xl pb-6 leading-relaxed text-mist md:pr-14">{entry.answer}</p>
+        <p className="max-w-xl pb-6 leading-relaxed text-fog md:pr-14">{entry.answer}</p>
       </motion.div>
     </div>
   );
@@ -104,7 +104,7 @@ export function FaqAccordion() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <div className="border-t border-gold/25">
+    <div className="border-t border-white/12">
       {FAQS.map((entry, i) => (
         <FaqItem
           key={entry.question}

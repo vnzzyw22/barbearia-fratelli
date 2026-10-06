@@ -1,7 +1,8 @@
-// Segundo telefone lido da placa da fachada (public/brand/foto-faxada.jpg).
-// O número com final 1432 é o WhatsApp (confirmado pelo cliente) e mora em
-// business_settings.whatsapp; este aqui é só telefone.
-export const EXTRA_PHONES = [{ display: "(44) 99916-7632", tel: "+5544999167632" }] as const;
+// Segundo telefone (fixo), além do WhatsApp em business_settings.whatsapp.
+// Era o telefone da placa da Fratelli — removido no rebrand (2026-10-06):
+// o Google Business da Blend só confirma um telefone, que já é o WhatsApp.
+// Preencher aqui só se a Blend tiver um segundo número real confirmado.
+export const EXTRA_PHONES: readonly { display: string; tel: string }[] = [];
 
 /** "5544999161432" -> "(44) 99916-1432" */
 export function formatBrPhone(raw: string) {

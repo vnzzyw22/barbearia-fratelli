@@ -121,11 +121,11 @@ export function ComboSelect<T>({
         aria-controls={listboxId}
         aria-labelledby={`${labelId} ${buttonId}`}
         onClick={() => (open ? closeMenu(false) : openMenu())}
-        className={`flex min-h-12 w-full items-center justify-between gap-3 rounded-none border-0 border-b bg-teal/70 px-3 py-3 text-left text-base text-ivory transition-colors duration-200 focus-visible:bg-teal ${
-          open ? "border-gold bg-teal" : "border-gold/40"
+        className={`flex min-h-12 w-full items-center justify-between gap-3 rounded-none border-0 border-b bg-ink/70 px-3 py-3 text-left text-base text-white transition-colors duration-200 focus-visible:bg-ink ${
+          open ? "border-royal bg-ink" : "border-royal/40"
         }`}
       >
-        <span className={selected ? "" : "text-mist"}>
+        <span className={selected ? "" : "text-fog"}>
           {selected ? getLabel(selected) : placeholder}
         </span>
         <ChevronIcon open={open} />
@@ -139,7 +139,7 @@ export function ComboSelect<T>({
           aria-labelledby={labelId}
           tabIndex={-1}
           onKeyDown={handleListKeyDown}
-          className="absolute z-20 mt-1 max-h-64 w-full overflow-auto border border-gold/40 bg-teal-ink py-1 outline-none"
+          className="absolute z-20 mt-1 max-h-64 w-full overflow-auto border border-royal/40 bg-ink py-1 outline-none"
         >
           {items.map((item, i) => {
             const id = getId(item);
@@ -154,7 +154,7 @@ export function ComboSelect<T>({
                 onMouseEnter={() => setActiveIndex(i)}
                 onClick={() => selectAt(i)}
                 className={`cursor-pointer px-3 py-3 text-[0.95rem] transition-colors duration-150 ${
-                  isActive ? "bg-gold text-teal-ink" : "text-ivory"
+                  isActive ? "bg-royal text-white" : "text-white"
                 }`}
               >
                 {getLabel(item)}

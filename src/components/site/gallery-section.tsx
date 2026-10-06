@@ -17,17 +17,23 @@ const SLOTS = [
   { label: "A equipe", cls: "col-span-3 aspect-square md:col-span-4" },
 ];
 
+// Fotos reais enviadas pelo cliente (2026-10-06) pra ocupar os slots que ainda
+// não têm foto cadastrada no /admin/galeria. Assim que o admin cadastrar fotos
+// de verdade, `photos` (do banco) passa a preencher esses mesmos índices e
+// estas somem sozinhas — ver a ordem de prioridade abaixo.
+const SEED_PHOTOS = ["/gallery/corte-03.jpg", "/gallery/corte-02.jpg"];
+
 export function GallerySection({ photos }: GallerySectionProps) {
   return (
-    <section id="galeria" className="bg-teal text-ivory">
+    <section id="galeria" className="bg-ink text-white">
       <div className="mx-auto max-w-[1440px] px-5 py-16 md:px-12 lg:py-28">
         <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <h2 className="font-display text-[3rem] leading-[0.95] sm:text-7xl">
             Galeria
           </h2>
           {photos.length === 0 && (
-            <p className="max-w-xs leading-relaxed text-mist">
-              Os trabalhos da casa entram aqui assim que as fotos forem enviadas.
+            <p className="max-w-xs leading-relaxed text-fog">
+              Mais trabalhos da casa entram aqui assim que as fotos forem enviadas.
             </p>
           )}
         </div>
@@ -35,19 +41,21 @@ export function GallerySection({ photos }: GallerySectionProps) {
         <div className="mt-12 grid grid-cols-6 gap-3 md:mt-16 md:min-h-[520px] md:grid-cols-12 md:grid-rows-2 md:gap-4">
           {SLOTS.map((slot, i) => {
             const photo = photos[i];
-            return photo ? (
-              <div key={photo.id} className={`relative overflow-hidden ${slot.cls}`}>
-                <Image
-                  src={photo.url}
-                  alt={photo.category ?? "Trabalho da Fratelli Barber Club"}
-                  fill
-                  sizes="(min-width: 768px) 40vw, 50vw"
-                  className="object-cover"
-                />
-              </div>
-            ) : (
-              <PhotoSlot key={slot.label} label={slot.label} tone="deep" className={slot.cls} />
-            );
+            const seedSrc = !photo ? SEED_PHOTOS[i] : undefined;
+            if (photo || seedSrc) {
+              return (
+                <div key={photo?.id ?? seedSrc} className={`relative overflow-hidden ${slot.cls}`}>
+                  <Image
+                    src={photo?.url ?? seedSrc!}
+                    alt={photo?.category ?? `${slot.label} — trabalho da Blend Barber Club`}
+                    fill
+                    sizes="(min-width: 768px) 40vw, 50vw"
+                    className="object-cover"
+                  />
+                </div>
+              );
+            }
+            return <PhotoSlot key={slot.label} label={slot.label} tone="steel" className={slot.cls} />;
           })}
         </div>
       </div>
